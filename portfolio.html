@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riccardo Civiero — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0c0f;
+      --bg2: #0f1217;
+      --bg3: #151922;
+      --border: #1e2530;
+      --border2: #2a3340;
+      --accent: #00e5a0;
+      --accent2: #00b8ff;
+      --accent3: #7c5cfc;
+      --text: #e8edf4;
+      --text2: #8a95a3;
+      --text3: #4a5568;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    #root { min-height: 100vh; }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+
+<script type="text/babel">
+
+/* ── DATA ── */
+const data = {
+  name: "Riccardo Civiero",
+  title: "Cybersecurity & Software Developer",
+  tagline: "ITS Cybersecurity · Programmatore @ ReputationUP",
+  email: "civiero.riccardo03@gmail.com",
+  birth: "17 Febbraio 2003",
+  links: [
+    { label: "Linktree", url: "https://linktr.ee/RickyCivi", icon: "🌐" },
+    { label: "GitHub", url: "https://github.com/SpiderCivi", icon: "⌥" },
+  ],
+  about: "Ciao, mi chiamo Riccardo Civiero. Sono uno studente e sviluppatore con una solida formazione informatica acquisita all'ITIS E. Barsanti e una specializzazione in Cybersecurity all'ITS di Treviso. Ho maturato competenze pratiche nel problem solving, apprendimento attivo e gestione dello stress. Attualmente lavoro come Programmatore Informatico presso ReputationUP, dove mi occupo di sviluppo siti, app e sicurezza web.",
+  skills: {
+    "Cybersecurity": ["Network Security", "Penetration Testing", "ONTAP Storage", "Virtualizzazione", "Server Maintenance"],
+    "Sviluppo": ["Programmazione Web", "App Development", "Sicurezza Web", "Cloud Systems", "Help Desk"],
+    "Certificazioni": ["Cisco CCNA (in corso)", "Patente AM", "Patente B"],
+    "Soft Skills": ["Problem Solving", "Apprendimento Attivo", "Gestione Stress", "Lavoro in team", "Analisi Processi"],
+  },
+  languages: [
+    { lang: "Italiano", level: "Madrelingua", pct: 100 },
+    { lang: "Inglese", level: "B1", pct: 55 },
+  ],
+  education: [
+    {
+      school: "ITS Cybersecurity · Digital Academy",
+      degree: "Specializzazione in Cybersecurity",
+      field: "Cyber Security Specialist",
+      period: "Ott 2023 – Lug 2025",
+      grade: null,
+      location: "Treviso",
+      url: "https://itsdigitalacademy.com/corsi/cyber-security-specialist/",
+      current: false,
+    },
+    {
+      school: "ITT Eugenio Barsanti",
+      degree: "Diploma Informatico",
+      field: "Informatica e Telecomunicazioni",
+      period: "Set 2017 – Lug 2023",
+      grade: null,
+      location: "Castelfranco Veneto",
+      url: "https://www.barsanti.edu.it/",
+      current: false,
+    },
+  ],
+  experience: [
+    {
+      company: "ReputationUP",
+      role: "Programmatore Informatico",
+      period: "Ott 2025 – Presente",
+      location: "Castelfranco Veneto",
+      current: true,
+      tags: ["Web Dev", "App Dev", "Security"],
+      desc: ["Programmazione siti e applicazioni web", "Sviluppo sicurezza nei siti", "Supporto tecnico interno"],
+    },
+    {
+      company: "Rossignol-Lange",
+      role: "Tecnico Informatico",
+      period: "Mar 2025 – Giu 2025",
+      location: "Montebelluna",
+      current: false,
+      tags: ["IT Support", "Server", "Help Desk"],
+      desc: ["Manutenzione computer e server", "Supporto help-desk", "Supporto al personale IT interno"],
+    },
+    {
+      company: "Vem Sistemi",
+      role: "Cloud System Engineer",
+      period: "Giu 2024 – Lug 2024",
+      location: "Padova",
+      current: false,
+      tags: ["Cloud", "ONTAP", "Virtualizzazione"],
+      desc: ["Manutenzione sistemi cloud", "Programmazione storage (ONTAP)", "Esperienza in virtualizzazione", "Rapporti con fornitori"],
+    },
+    {
+      company: "Merieux",
+      role: "Tecnico Informatico",
+      period: "Giu 2022 – Ago 2022",
+      location: "Piombino Dese",
+      current: false,
+      tags: ["IT Support", "Manutenzione"],
+      desc: ["Manutenzione computer", "Rapporti con clienti e colleghi"],
+    },
+  ],
+  projects: [],
+};
+
+/* ── ICONS ── */
+const Icon = ({ name, size = 16 }) => {
+  const icons = {
+    mail: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>,
+    phone: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.48 5.48l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+    location: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
+    link: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+    calendar: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
+    chevron: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>,
+    star: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+    code: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>,
+    shield: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+    user: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>,
+    briefcase: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>,
+    book: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+    folder: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
+    arrow: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
+    dot: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>,
+  };
+  return icons[name] || null;
+};
+
+/* ── NAV ── */
+const Nav = ({ accent }) => {
+  const [scrolled, setScrolled] = React.useState(false);
+  const [active, setActive] = React.useState('hero');
+
+  React.useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      const sections = ['hero','about','skills','experience','education','contact'];
+      for (const id of [...sections].reverse()) {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 120) { setActive(id); break; }
+      }
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navItems = [
+    { id: 'about', label: 'Chi sono' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'experience', label: 'Esperienza' },
+    { id: 'education', label: 'Formazione' },
+    { id: 'contact', label: 'Contatti' },
+  ];
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  return (
+    <nav style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+      padding: '0 2rem',
+      background: scrolled ? 'rgba(10,12,15,0.92)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(12px)' : 'none',
+      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+      transition: 'all 0.3s ease',
+      height: '64px',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    }}>
+      <button onClick={() => scrollTo('hero')} style={{
+        background: 'none', border: 'none', cursor: 'pointer',
+        fontFamily: 'var(--font-mono)', fontSize: '14px', color: accent,
+        letterSpacing: '0.05em',
+      }}>
+        RC<span style={{ color: 'var(--text2)' }}>.dev</span>
+      </button>
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        {navItems.map(item => (
+          <button key={item.id} onClick={() => scrollTo(item.id)} style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontFamily: 'var(--font-display)', fontSize: '13px', fontWeight: 500,
+            color: active === item.id ? accent : 'var(--text2)',
+            letterSpacing: '0.03em',
+            transition: 'color 0.2s',
+            padding: '0',
+          }}>{item.label}</button>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+/* ── CYBER GLOBE ── */
+const CyberGlobe = ({ accent }) => {
+  const canvasRef = React.useRef(null);
+  const animRef = React.useRef(null);
+  const stateRef = React.useRef({ rotation: 0, attacks: [], impacts: [], lastAttack: 0, stars: null });
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.width = canvas.offsetWidth * dpr;
+    const H = canvas.height = canvas.offsetHeight * dpr;
+    const cx = W / 2, cy = H / 2;
+    const R = Math.min(W, H) * 0.37;
+
+    const hex2rgb = (hex) => {
+      const h = hex.replace('#','');
+      return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    };
+    const [ar, ag, ab] = hex2rgb(accent);
+
+    const state = stateRef.current;
+
+    // Star field — generate once
+    if (!state.stars) {
+      state.stars = Array.from({length: 70}, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 0.4 + Math.random() * 1.0,
+        phase: Math.random() * Math.PI * 2,
+      }));
+    }
+
+    // Dense continent point cloud — coast + interior fill
+    const DOTS = [
+      // ── North America coast ──
+      [71,-155],[68,-162],[65,-168],[62,-145],[58,-137],[55,-130],[52,-128],[50,-125],
+      [48,-124],[45,-124],[42,-124],[38,-122],[35,-120],[32,-117],[29,-110],
+      [64,-141],[60,-135],[57,-135],[55,-132],[71,-128],[73,-120],[75,-110],[72,-100],
+      [68,-95],[65,-85],[60,-95],[55,-95],[50,-95],[48,-90],[45,-84],[42,-83],
+      [47,-70],[44,-66],[46,-60],[50,-57],[52,-56],[48,-53],[47,-55],
+      [45,-75],[42,-80],[40,-74],[36,-76],[32,-81],[30,-84],[28,-82],[26,-80],
+      [35,-95],[32,-95],[30,-95],[28,-97],[26,-98],[24,-110],[22,-106],[20,-103],
+      [20,-87],[17,-89],[15,-89],[14,-90],[13,-88],[10,-84],[9,-80],
+      [62,-110],[65,-115],[62,-125],[58,-122],[55,-118],[52,-112],[49,-98],
+      // ── North America interior fill ──
+      [55,-105],[55,-110],[55,-115],[52,-105],[52,-110],[52,-115],[52,-120],
+      [50,-100],[50,-105],[50,-110],[50,-115],[50,-120],[48,-100],[48,-105],
+      [48,-110],[48,-115],[48,-120],[45,-100],[45,-105],[45,-110],[45,-115],
+      [42,-90],[42,-95],[42,-100],[42,-105],[42,-110],[42,-115],
+      [40,-90],[40,-95],[40,-100],[40,-105],[40,-110],[40,-115],[40,-120],
+      [38,-90],[38,-95],[38,-100],[38,-105],[38,-110],[38,-115],
+      [35,-100],[35,-105],[35,-110],[33,-100],[33,-105],[33,-110],
+      [30,-100],[28,-105],[25,-105],[23,-104],[21,-102],
+      // ── South America coast ──
+      [12,-72],[10,-68],[8,-63],[5,-61],[3,-60],[0,-50],[-3,-43],[-5,-35],
+      [-8,-35],[-10,-37],[-12,-38],[-15,-39],[-20,-40],[-23,-43],[-25,-48],
+      [-28,-49],[-30,-51],[-32,-52],[-34,-53],[-36,-57],[-38,-57],[-40,-62],
+      [-42,-65],[-45,-66],[-48,-66],[-52,-68],[-55,-68],[-55,-66],[-53,-70],
+      [0,-75],[-5,-78],[-8,-78],[-12,-76],[-15,-70],[-18,-70],[-22,-68],
+      [-18,-63],[-15,-60],[-10,-65],[-5,-60],[0,-60],[5,-55],
+      // ── South America interior ──
+      [0,-65],[-5,-65],[-5,-70],[-10,-60],[-10,-65],[-10,-70],
+      [-15,-55],[-15,-60],[-15,-65],[-20,-50],[-20,-55],[-20,-60],[-20,-65],
+      [-25,-55],[-25,-60],[-25,-65],[-30,-55],[-30,-60],[-30,-65],
+      // ── Europe coast ──
+      [71,26],[70,22],[68,18],[66,14],[63,10],[60,5],[58,6],[56,8],
+      [54,9],[52,5],[50,4],[48,2],[46,2],[44,2],[43,5],[42,9],
+      [40,18],[38,15],[37,15],[38,24],[40,22],[42,23],[44,26],[46,24],
+      [48,18],[50,18],[52,22],[54,18],[56,24],[58,24],[60,24],[62,26],
+      [65,28],[67,28],[70,28],[68,32],[65,30],[60,28],[64,-22],[63,-20],
+      [56,-6],[54,-8],[52,-4],[51,-4],[50,-6],[49,-2],[47,-2],
+      // ── Europe interior ──
+      [58,10],[56,12],[54,12],[52,10],[52,14],[50,10],[50,14],[50,18],
+      [48,10],[48,14],[48,18],[48,22],[46,10],[46,14],[46,18],[46,22],
+      [44,10],[44,14],[44,18],[44,22],[42,14],[42,18],[42,22],[42,26],
+      [60,18],[60,22],[60,26],[58,18],[58,22],[62,18],[62,22],[64,20],
+      // ── Africa coast ──
+      [37,10],[35,11],[33,10],[31,10],[30,32],[27,33],[24,33],[22,37],
+      [18,38],[15,38],[12,44],[10,44],[8,45],[5,41],[3,42],[0,42],
+      [-4,40],[-10,40],[-15,35],[-20,35],[-25,34],[-30,32],[-34,26],
+      [-34,18],[-32,18],[-28,17],[-24,15],[-20,13],[-17,12],[-12,15],
+      [-8,14],[-5,10],[-3,8],[0,10],[3,10],[5,3],[6,-1],[5,-5],
+      [8,-13],[11,-15],[14,-17],[16,-16],[20,-17],[24,-15],[28,-13],
+      [32,-9],[35,-5],[37,-3],[36,4],[37,10],
+      // ── Africa interior ──
+      [20,20],[20,25],[20,30],[15,20],[15,25],[15,30],[15,35],
+      [10,20],[10,25],[10,30],[10,35],[5,20],[5,25],[5,30],
+      [0,15],[0,20],[0,25],[0,30],[-5,15],[-5,20],[-5,25],[-5,30],
+      [-10,20],[-10,25],[-10,30],[-15,20],[-15,25],[-15,30],
+      [-20,20],[-20,25],[-20,30],[-25,20],[-25,25],[-25,28],
+      [25,20],[25,25],[25,30],[30,20],[30,25],[30,30],
+      // ── Asia coast ──
+      [25,55],[28,50],[30,48],[32,46],[35,42],[38,38],[40,36],[42,36],
+      [38,48],[40,50],[42,50],[44,50],[46,50],[48,56],[50,57],
+      [55,60],[58,62],[60,60],[62,60],[64,62],[66,66],[68,68],[70,68],
+      [68,75],[65,80],[62,80],[60,85],[58,88],[56,90],[55,95],[52,100],
+      [50,100],[50,105],[52,110],[55,110],[55,120],[56,125],[55,130],
+      [52,140],[50,140],[48,135],[46,134],[44,132],[42,130],[40,130],
+      [38,121],[36,120],[32,120],[28,120],[25,118],[22,114],[20,110],
+      [18,108],[15,108],[12,109],[10,105],[8,105],[5,104],[2,104],
+      [1,104],[-2,105],[-5,105],[-8,116],[-5,120],[0,110],[5,116],
+      [8,118],[12,120],[15,120],[18,115],[22,120],[25,120],
+      [28,78],[25,78],[22,78],[18,78],[14,78],[10,78],[9,78],
+      [22,88],[24,88],[26,88],[26,90],[25,86],[28,84],[30,80],
+      [32,78],[35,72],[38,70],[38,65],[36,62],[35,58],[36,55],
+      [40,52],[38,58],[40,65],[42,68],[38,72],[36,66],[35,52],
+      // ── Asia interior ──
+      [30,60],[30,65],[30,70],[30,75],[30,80],[30,85],[30,90],[30,95],[30,100],
+      [35,60],[35,65],[35,70],[35,75],[35,80],[35,85],[35,90],[35,95],[35,100],
+      [40,60],[40,65],[40,70],[40,75],[40,80],[40,85],[40,90],[40,95],
+      [45,60],[45,65],[45,70],[45,75],[45,80],[45,85],[45,90],[45,95],[45,100],
+      [50,65],[50,70],[50,75],[50,80],[50,85],[50,90],[50,95],[50,100],
+      [55,70],[55,75],[55,80],[55,85],[55,90],[55,95],[55,100],
+      [25,65],[25,70],[25,75],[25,80],[25,85],[25,90],[25,95],[25,100],[25,105],
+      [20,75],[20,80],[20,85],[20,90],[20,95],[20,100],[20,105],
+      [15,75],[15,80],[15,85],[15,90],[15,95],[15,100],[15,105],
+      [10,75],[10,80],[10,85],[10,90],[10,95],[10,100],
+      // ── Australia coast + interior ──
+      [-14,128],[-12,132],[-12,136],[-13,142],[-16,145],[-20,148],
+      [-25,152],[-28,153],[-32,152],[-35,150],[-38,147],[-38,145],
+      [-38,142],[-38,140],[-36,137],[-32,134],[-28,114],[-22,114],
+      [-18,118],[-15,128],[-14,132],[-20,120],[-25,128],[-30,115],
+      [-34,116],[-35,118],[-34,122],[-32,122],[-28,122],[-24,118],
+      [-20,130],[-20,135],[-20,140],[-25,130],[-25,135],[-25,140],
+      [-28,130],[-28,135],[-28,140],[-30,125],[-30,130],[-30,135],
+      // ── Russia / Siberia coast + interior ──
+      [55,65],[56,60],[58,62],[60,62],[62,65],[65,65],[68,65],[70,72],
+      [72,80],[72,95],[70,100],[68,105],[65,110],[62,115],[60,120],
+      [58,125],[55,125],[52,128],[55,132],[58,138],[60,140],[62,142],
+      [65,142],[68,146],[68,160],[65,165],[62,168],[60,165],[58,162],
+      [60,65],[60,70],[60,75],[60,80],[60,85],[60,90],[60,95],[60,100],
+      [62,70],[62,75],[62,80],[62,85],[62,90],[62,95],[62,100],[62,105],
+      [64,70],[64,75],[64,80],[64,85],[64,90],[64,95],[64,100],[64,105],
+      [66,70],[66,75],[66,80],[66,85],[66,90],[66,95],[66,100],
+      [68,80],[68,85],[68,90],[68,95],[68,100],
+    ];
+
+    const cities = [
+      { name:'New York',    lat:40.7,  lon:-74.0 },
+      { name:'London',      lat:51.5,  lon:-0.1  },
+      { name:'Moscow',      lat:55.7,  lon:37.6  },
+      { name:'Beijing',     lat:39.9,  lon:116.4 },
+      { name:'Tokyo',       lat:35.7,  lon:139.7 },
+      { name:'Sydney',      lat:-33.9, lon:151.2 },
+      { name:'São Paulo',   lat:-23.5, lon:-46.6 },
+      { name:'Dubai',       lat:25.2,  lon:55.3  },
+      { name:'Singapore',   lat:1.3,   lon:103.8 },
+      { name:'Lagos',       lat:6.5,   lon:3.4   },
+      { name:'Mumbai',      lat:19.1,  lon:72.9  },
+      { name:'Seoul',       lat:37.6,  lon:126.9 },
+      { name:'Paris',       lat:48.9,  lon:2.3   },
+      { name:'Toronto',     lat:43.7,  lon:-79.4 },
+      { name:'Cairo',       lat:30.0,  lon:31.2  },
+      { name:'Castelfranco',lat:45.7,  lon:11.9, home:true },
+    ];
+
+    const toRad = d => d * Math.PI / 180;
+
+    const project = (lat, lon, rot) => {
+      const phi = toRad(90 - lat);
+      const theta = toRad(lon) + rot;
+      const sinPhi = Math.sin(phi);
+      const x = R * sinPhi * Math.cos(theta);
+      const y = R * Math.cos(phi);
+      const z = R * sinPhi * Math.sin(theta);
+      return { x: cx + x, y: cy - y, z, depth: (z + R) / (2 * R), visible: z > -R * 0.08 };
+    };
+
+    const arcPoint = (src, dst, t, rot) => {
+      const lat = src.lat + (dst.lat - src.lat) * t;
+      const lon = src.lon + (dst.lon - src.lon) * t;
+      const lift = Math.sin(t * Math.PI) * 0.5;
+      const phi = toRad(90 - lat);
+      const theta = toRad(lon) + rot;
+      const r = R * (1 + lift);
+      const sinPhi = Math.sin(phi);
+      return {
+        x: cx + r * sinPhi * Math.cos(theta),
+        y: cy - r * Math.cos(phi),
+        z: r * sinPhi * Math.sin(theta),
+      };
+    };
+
+    const spawnAttack = () => {
+      const src = cities[Math.floor(Math.random() * cities.length)];
+      let dst; do { dst = cities[Math.floor(Math.random() * cities.length)]; } while (dst === src);
+      const palette = [accent, '#00b8ff', '#f43f5e', '#f59e0b', '#a78bfa'];
+      state.attacks.push({
+        src, dst, progress: 0,
+        speed: 0.003 + Math.random() * 0.004,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        impacted: false,
+      });
+    };
+
+    const draw = (ts) => {
+      ctx.clearRect(0, 0, W, H);
+      const rot = state.rotation += 0.0010;
+
+      // ── STARS ──
+      state.stars.forEach(s => {
+        const flicker = 0.5 + 0.5 * Math.sin(ts * 0.0006 + s.phase);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${0.15 + flicker * 0.35})`;
+        ctx.fill();
+      });
+
+      // ── ATMOSPHERE HALO (outside globe) ──
+      const halo = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.55);
+      halo.addColorStop(0,   `rgba(${ar},${ag},${ab},0.28)`);
+      halo.addColorStop(0.25,`rgba(${ar},${ag},${ab},0.12)`);
+      halo.addColorStop(0.55,`rgba(0,140,255,0.05)`);
+      halo.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = halo;
+      ctx.fillRect(0, 0, W, H);
+
+      // ── OUTER GLOW ──
+      const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 2.2);
+      outerGlow.addColorStop(0,   `rgba(${ar},${ag},${ab},0.06)`);
+      outerGlow.addColorStop(0.35,`rgba(0,100,220,0.04)`);
+      outerGlow.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = outerGlow;
+      ctx.fillRect(0, 0, W, H);
+
+      // ── CLIP to globe ──
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.clip();
+
+      // Globe body — deep dark with faint tint
+      const fill = ctx.createRadialGradient(cx - R*0.38, cy - R*0.38, R*0.04, cx, cy, R);
+      fill.addColorStop(0,   `rgba(${ar},${ag},${ab},0.07)`);
+      fill.addColorStop(0.35,'rgba(4,8,18,0.92)');
+      fill.addColorStop(1,   'rgba(1,3,9,0.98)');
+      ctx.fillStyle = fill;
+      ctx.fillRect(cx - R, cy - R, R*2, R*2);
+
+      // ── SPECULAR HIGHLIGHT ──
+      const spec = ctx.createRadialGradient(cx - R*0.38, cy - R*0.4, 0, cx - R*0.28, cy - R*0.3, R*0.7);
+      spec.addColorStop(0,   'rgba(255,255,255,0.07)');
+      spec.addColorStop(0.45,`rgba(${ar},${ag},${ab},0.03)`);
+      spec.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = spec;
+      ctx.fillRect(cx - R, cy - R, R*2, R*2);
+
+      // ── GRID ──
+      for (let lat = -75; lat <= 75; lat += 15) {
+        ctx.beginPath();
+        let first = true;
+        const isEq = lat === 0;
+        for (let lon = -180; lon <= 180; lon += 2) {
+          const p = project(lat, lon, rot);
+          if (!p.visible) { first = true; continue; }
+          first ? (ctx.moveTo(p.x, p.y), first = false) : ctx.lineTo(p.x, p.y);
+        }
+        ctx.strokeStyle = isEq ? `rgba(${ar},${ag},${ab},0.30)` : `rgba(${ar},${ag},${ab},0.08)`;
+        ctx.lineWidth = isEq ? 0.9 : 0.4;
+        ctx.stroke();
+      }
+      for (let lon = -180; lon < 180; lon += 20) {
+        ctx.beginPath();
+        let first = true;
+        for (let lat = -80; lat <= 80; lat += 2) {
+          const p = project(lat, lon, rot);
+          if (!p.visible) { first = true; continue; }
+          first ? (ctx.moveTo(p.x, p.y), first = false) : ctx.lineTo(p.x, p.y);
+        }
+        ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.05)`;
+        ctx.lineWidth = 0.4;
+        ctx.stroke();
+      }
+
+      // ── CONTINENT DOTS ──
+      DOTS.forEach(([lat, lon]) => {
+        const p = project(lat, lon, rot);
+        if (!p.visible) return;
+        const alpha = 0.38 + p.depth * 0.58;
+        const size  = 1.4 + p.depth * 1.8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${ar},${ag},${ab},${alpha})`;
+        ctx.fill();
+      });
+
+      ctx.restore(); // end clip
+
+      // ── GLOBE BORDER ──
+      ctx.save();
+      ctx.shadowColor = accent;
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.55)`;
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+      ctx.restore();
+
+      // ── RIM LIGHT (opposite side) ──
+      const rim = ctx.createRadialGradient(cx + R*0.45, cy - R*0.45, R*0.15, cx, cy, R*1.02);
+      rim.addColorStop(0,    'rgba(0,0,0,0)');
+      rim.addColorStop(0.68, 'rgba(0,0,0,0)');
+      rim.addColorStop(0.84, `rgba(0,184,255,0.18)`);
+      rim.addColorStop(1,    `rgba(0,184,255,0.38)`);
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fillStyle = rim;
+      ctx.fill();
+
+      // ── CITY MARKERS ──
+      cities.forEach((city, i) => {
+        const p = project(city.lat, city.lon, rot);
+        if (!p.visible) return;
+        const [cr, cg, cb] = city.home ? [255,210,60] : [ar,ag,ab];
+        const basePhase = ts * 0.00095 + i * 2.1;
+
+        // 3 expanding rings at staggered phases
+        for (let ring = 0; ring < 3; ring++) {
+          const phase = (basePhase + ring * (Math.PI * 2 / 3)) % (Math.PI * 2);
+          const pct = phase / (Math.PI * 2);
+          const ringR = 3 + pct * 20;
+          const alpha = (1 - pct) * 0.6 * p.depth;
+          if (alpha < 0.01) continue;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, ringR, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha})`;
+          ctx.lineWidth = city.home ? 1.2 : 0.9;
+          ctx.stroke();
+        }
+
+        // Core dot with glow
+        const dotR = city.home ? 5 : 3.5;
+        ctx.save();
+        ctx.shadowColor = city.home ? `rgba(255,210,60,1)` : accent;
+        ctx.shadowBlur = city.home ? 28 : 20;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, dotR * (0.6 + p.depth * 0.4), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},1)`;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // ── SPAWN ATTACKS ──
+      if (ts - state.lastAttack > 450 + Math.random()*350 && state.attacks.length < 10) {
+        spawnAttack();
+        state.lastAttack = ts;
+      }
+
+      // ── ATTACK ARCS — 2-pass: glow then core ──
+      for (let i = state.attacks.length - 1; i >= 0; i--) {
+        const atk = state.attacks[i];
+        atk.progress += atk.speed;
+        const [r2,g2,b2] = hex2rgb(atk.color.startsWith('#') ? atk.color : accent);
+        const prog = Math.min(atk.progress, 1);
+        const STEPS = 80;
+        const headStep = Math.floor(prog * STEPS);
+        const tailStep = Math.max(0, headStep - 28);
+
+        // Pre-collect points
+        const pts = [];
+        for (let s = tailStep; s <= headStep; s++) {
+          pts.push(arcPoint(atk.src, atk.dst, s / STEPS, rot));
+        }
+        if (pts.length < 2) { if (atk.progress >= 1.6) state.attacks.splice(i, 1); continue; }
+
+        // Pass 1: glow halo
+        ctx.save();
+        ctx.shadowColor = atk.color;
+        ctx.shadowBlur = 22;
+        for (let s = 0; s < pts.length - 1; s++) {
+          const a = (s / (pts.length - 1)) * 0.35;
+          ctx.beginPath();
+          ctx.moveTo(pts[s].x, pts[s].y);
+          ctx.lineTo(pts[s+1].x, pts[s+1].y);
+          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${a})`;
+          ctx.lineWidth = 5;
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Pass 2: crisp core
+        for (let s = 0; s < pts.length - 1; s++) {
+          const a = (s / (pts.length - 1)) * 0.9;
+          ctx.beginPath();
+          ctx.moveTo(pts[s].x, pts[s].y);
+          ctx.lineTo(pts[s+1].x, pts[s+1].y);
+          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${a})`;
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+        }
+
+        // Head dot with bloom
+        if (atk.progress < 1) {
+          const head = arcPoint(atk.src, atk.dst, atk.progress, rot);
+          const fadeOut = 1 - Math.max(0, (atk.progress - 0.85) / 0.15);
+          ctx.save();
+          ctx.shadowColor = atk.color;
+          ctx.shadowBlur = 32;
+          ctx.beginPath();
+          ctx.arc(head.x, head.y, 5.5, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(${r2},${g2},${b2},${fadeOut})`;
+          ctx.fill();
+          // White core
+          ctx.shadowBlur = 0;
+          ctx.beginPath();
+          ctx.arc(head.x, head.y, 2, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(255,255,255,${fadeOut * 0.8})`;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Trigger impact
+        if (atk.progress >= 1 && !atk.impacted) {
+          atk.impacted = true;
+          const dst = project(atk.dst.lat, atk.dst.lon, rot);
+          state.impacts.push({ x: dst.x, y: dst.y, color: atk.color, age: 0 });
+        }
+
+        if (atk.progress >= 1.6) state.attacks.splice(i, 1);
+      }
+
+      // ── IMPACT EXPLOSIONS ──
+      for (let i = state.impacts.length - 1; i >= 0; i--) {
+        const imp = state.impacts[i];
+        imp.age++;
+        const [r2,g2,b2] = hex2rgb(imp.color.startsWith('#') ? imp.color : accent);
+        ctx.save();
+        ctx.shadowColor = imp.color;
+        ctx.shadowBlur = 14;
+        for (let ring = 0; ring < 3; ring++) {
+          const t = ((imp.age / 60) + ring * 0.33) % 1;
+          const ringR = t * 38;
+          const alpha = (1 - t) * 1.0;
+          ctx.beginPath();
+          ctx.arc(imp.x, imp.y, ringR, 0, Math.PI*2);
+          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${alpha})`;
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
+        }
+        ctx.restore();
+        if (imp.age > 60) state.impacts.splice(i, 1);
+      }
+
+      // ── HUD STATUS BAR ──
+      const count = state.attacks.length;
+      const fs = 10 * dpr;
+      ctx.font = `600 ${fs}px 'JetBrains Mono', monospace`;
+      const label = `◉ LIVE THREATS: ${String(count).padStart(2,'0')}`;
+      const tw = ctx.measureText(label).width;
+      const hx = cx - tw / 2 - 12*dpr;
+      const hy = cy + R + 14*dpr;
+      const hw = tw + 24*dpr;
+      const hh = 22*dpr;
+
+      ctx.fillStyle = 'rgba(4,8,16,0.75)';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(hx, hy, hw, hh, 4*dpr);
+      } else {
+        ctx.rect(hx, hy, hw, hh);
+      }
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.3)`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(${ar},${ag},${ab},0.92)`;
+      ctx.fillText(label, hx + 12*dpr, hy + 15*dpr);
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [accent]);
+
+  return (
+    <canvas ref={canvasRef} style={{
+      position: 'absolute',
+      top: '50%', right: '-2%',
+      transform: 'translateY(-50%)',
+      width: 'min(540px, 50vw)',
+      height: 'min(600px, 55vw)',
+      pointerEvents: 'none',
+      opacity: 0.95,
+    }} />
+  );
+};
+
+/* ── HERO ── */
+const Hero = ({ accent }) => {
+  const [typed, setTyped] = React.useState('');
+  const [showCursor, setShowCursor] = React.useState(true);
+  const phrases = ['Cybersecurity Specialist', 'Web Developer', 'Cloud Engineer', 'Problem Solver'];
+  const phraseIdx = React.useRef(0);
+  const charIdx = React.useRef(0);
+  const deleting = React.useRef(false);
+
+  React.useEffect(() => {
+    let timeout;
+    const tick = () => {
+      const phrase = phrases[phraseIdx.current];
+      if (!deleting.current) {
+        charIdx.current++;
+        setTyped(phrase.slice(0, charIdx.current));
+        if (charIdx.current === phrase.length) {
+          deleting.current = true;
+          timeout = setTimeout(tick, 1800);
+          return;
+        }
+      } else {
+        charIdx.current--;
+        setTyped(phrase.slice(0, charIdx.current));
+        if (charIdx.current === 0) {
+          deleting.current = false;
+          phraseIdx.current = (phraseIdx.current + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(tick, deleting.current ? 40 : 70);
+    };
+    timeout = setTimeout(tick, 600);
+    const cursorInterval = setInterval(() => setShowCursor(v => !v), 530);
+    return () => { clearTimeout(timeout); clearInterval(cursorInterval); };
+  }, []);
+
+  return (
+    <section id="hero" style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center',
+      padding: '0 clamp(1.5rem, 8vw, 10rem)',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Background grid */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
+        backgroundSize: '60px 60px',
+        opacity: 0.25,
+        maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
+      }} />
+      {/* Cyber Globe */}
+      <CyberGlobe accent={accent} />
+
+      <div style={{ position: 'relative', maxWidth: '800px' }}>
+        <div style={{
+          fontFamily: 'var(--font-mono)', fontSize: '13px',
+          color: accent, letterSpacing: '0.1em', marginBottom: '1.5rem',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: accent, display: 'inline-block', boxShadow: `0 0 8px ${accent}` }} />
+          DISPONIBILE PER NUOVE OPPORTUNITÀ
+        </div>
+
+        <h1 style={{
+          fontSize: 'clamp(3rem, 8vw, 6rem)',
+          fontWeight: 700, lineHeight: 1.05,
+          letterSpacing: '-0.02em',
+          marginBottom: '1rem',
+        }}>
+          Riccardo<br />
+          <span style={{ color: accent }}>Civiero</span>
+        </h1>
+
+        <div style={{
+          fontFamily: 'var(--font-mono)', fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
+          color: 'var(--text2)', marginBottom: '2rem',
+          minHeight: '2em',
+        }}>
+          <span style={{ color: 'var(--text3)' }}>$ </span>
+          {typed}
+          <span style={{ opacity: showCursor ? 1 : 0, color: accent }}>▌</span>
+        </div>
+
+        <p style={{
+          fontSize: '1.05rem', color: 'var(--text2)',
+          maxWidth: '520px', lineHeight: 1.7, marginBottom: '2.5rem',
+        }}>
+          Specializzato in Cybersecurity e sviluppo software, con esperienza in ambienti cloud, reti e sicurezza web. Attualmente @ ReputationUP.
+        </p>
+
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} style={{
+            padding: '0.75rem 1.75rem',
+            background: accent, color: '#0a0c0f',
+            border: 'none', borderRadius: '6px',
+            fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 600,
+            cursor: 'pointer', letterSpacing: '0.03em',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+            boxShadow: `0 0 20px ${accent}40`,
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 4px 24px ${accent}60`; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 0 20px ${accent}40`; }}
+          >
+            Contattami →
+          </button>
+          <a href={`mailto:${data.email}`} style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.75rem 1.5rem',
+            border: `1px solid ${accent}40`, borderRadius: '6px',
+            fontFamily: 'var(--font-mono)', fontSize: '13px',
+            color: accent, textDecoration: 'none',
+            transition: 'border-color 0.15s, background 0.15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.background = `${accent}12`; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = `${accent}40`; e.currentTarget.style.background = 'transparent'; }}
+          >
+            <Icon name="mail" size={14} />
+            {data.email}
+          </a>
+        </div>
+
+        {/* Stats */}
+        <div style={{ display: 'flex', gap: '2.5rem', marginTop: '3.5rem', flexWrap: 'wrap' }}>
+          {[
+            { n: '2+', label: 'Anni di esperienza IT' },
+            { n: '4+', label: 'Aziende' },
+          ].map(s => (
+            <div key={s.label}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.6rem', fontWeight: 700, color: accent }}>{s.n}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text3)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ── SECTION HEADER ── */
+const SectionHeader = ({ icon, label, title, accent }) => (
+  <div style={{ marginBottom: '3rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+      <span style={{ color: accent }}>{icon}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: accent, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</span>
+    </div>
+    <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{title}</h2>
+  </div>
+);
+
+/* ── ABOUT ── */
+const About = ({ accent }) => (
+  <section id="about" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
+    <SectionHeader icon={<Icon name="user" size={14} />} label="About" title="Chi sono" accent={accent} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '4rem', alignItems: 'start' }}>
+      <div>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+          {data.about}
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          {[
+            { label: 'Data di nascita', value: data.birth },
+            { label: 'Città', value: 'Castelfranco Veneto' },
+            { label: 'Email', value: data.email },
+          ].map(({ label, value }) => (
+            <div key={label} style={{
+              padding: '1rem',
+              background: 'var(--bg2)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+            }}>
+              <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem' }}>{label}</div>
+              <div style={{ fontSize: '14px', color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        {/* Languages */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text3)', marginBottom: '1.25rem' }}>Lingue</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {data.languages.map(l => (
+              <div key={l.lang}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{l.lang}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: accent }}>{l.level}</span>
+                </div>
+                <div style={{ height: '3px', background: 'var(--border)', borderRadius: '2px' }}>
+                  <div style={{ width: `${l.pct}%`, height: '100%', background: accent, borderRadius: '2px', transition: 'width 1s ease' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Terminal card */}
+        <div style={{
+          background: 'var(--bg2)', border: '1px solid var(--border)',
+          borderRadius: '10px', overflow: 'hidden',
+        }}>
+          <div style={{
+            padding: '0.6rem 1rem',
+            background: 'var(--bg3)', borderBottom: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+          }}>
+            {['#ff5f57','#febc2e','#28c840'].map(c => (
+              <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+            ))}
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text3)', marginLeft: '0.5rem' }}>whoami.sh</span>
+          </div>
+          <div style={{ padding: '1.25rem', fontFamily: 'var(--font-mono)', fontSize: '13px', lineHeight: 2 }}>
+            {[
+              ['$', 'whoami'],
+              ['>', 'Riccardo Civiero'],
+              ['$', 'cat skills.txt'],
+              ['>', 'Cybersecurity · Cloud · WebDev'],
+              ['$', 'echo $LOCATION'],
+              ['>', 'Castelfranco Veneto, IT'],
+              ['$', 'echo $STATUS'],
+              ['>', <span style={{ color: accent }}>● Disponibile</span>],
+            ].map(([prompt, text], i) => (
+              <div key={i} style={{ display: 'flex', gap: '0.75rem' }}>
+                <span style={{ color: prompt === '$' ? accent : 'var(--text3)', minWidth: '1rem' }}>{prompt}</span>
+                <span style={{ color: prompt === '$' ? 'var(--text2)' : 'var(--text)' }}>{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ── SKILLS ── */
+const Skills = ({ accent }) => (
+  <section id="skills" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
+    <SectionHeader icon={<Icon name="code" size={14} />} label="Skills" title="Competenze" accent={accent} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+      {Object.entries(data.skills).map(([cat, skills]) => (
+        <div key={cat} style={{
+          background: 'var(--bg)', border: '1px solid var(--border)',
+          borderRadius: '10px', padding: '1.5rem',
+          transition: 'border-color 0.2s',
+        }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = `${accent}60`}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+        >
+          <h3 style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.1em', color: accent, marginBottom: '1rem' }}>{cat}</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {skills.map(s => (
+              <span key={s} style={{
+                padding: '0.3rem 0.75rem',
+                background: 'var(--bg3)', border: '1px solid var(--border)',
+                borderRadius: '4px', fontSize: '13px', color: 'var(--text2)',
+                fontFamily: 'var(--font-mono)',
+              }}>{s}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+/* ── EXPERIENCE ── */
+const Experience = ({ accent, showTimeline }) => (
+  <section id="experience" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
+    <SectionHeader icon={<Icon name="briefcase" size={14} />} label="Experience" title="Esperienza" accent={accent} />
+    <div style={{ position: 'relative' }}>
+      {showTimeline && (
+        <div style={{
+          position: 'absolute', left: '0', top: 0, bottom: 0,
+          width: '1px', background: `linear-gradient(to bottom, ${accent}, var(--border), transparent)`,
+          marginLeft: '11px',
+        }} />
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {data.experience.map((exp, i) => (
+          <div key={i} style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+            {showTimeline && (
+              <div style={{
+                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                background: exp.current ? accent : 'var(--bg2)',
+                border: `2px solid ${exp.current ? accent : 'var(--border2)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: exp.current ? `0 0 12px ${accent}60` : 'none',
+                marginTop: '4px',
+              }}>
+                {exp.current && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg)' }} />}
+              </div>
+            )}
+            <div style={{
+              flex: 1, background: 'var(--bg2)', border: '1px solid var(--border)',
+              borderRadius: '10px', padding: '1.5rem',
+              borderLeft: exp.current ? `3px solid ${accent}` : '1px solid var(--border)',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.2rem' }}>{exp.role}</h3>
+                  <div style={{ color: accent, fontSize: '14px', fontWeight: 500 }}>{exp.company}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text3)' }}>{exp.period}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{exp.location}</div>
+                  {exp.current && (
+                    <span style={{
+                      display: 'inline-block', marginTop: '0.3rem',
+                      padding: '0.1rem 0.5rem', background: `${accent}20`, color: accent,
+                      border: `1px solid ${accent}40`, borderRadius: '20px', fontSize: '11px',
+                      fontFamily: 'var(--font-mono)',
+                    }}>● live</span>
+                  )}
+                </div>
+              </div>
+              <ul style={{ paddingLeft: '1rem', marginBottom: '0.75rem' }}>
+                {exp.desc.map((d, j) => (
+                  <li key={j} style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '0.2rem', listStyleType: 'none', paddingLeft: 0 }}>
+                    <span style={{ color: accent, marginRight: '0.5rem' }}>›</span>{d}
+                  </li>
+                ))}
+              </ul>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                {exp.tags.map(t => (
+                  <span key={t} style={{
+                    padding: '0.2rem 0.6rem', fontSize: '11px',
+                    background: 'var(--bg3)', border: '1px solid var(--border)',
+                    borderRadius: '4px', color: 'var(--text3)',
+                    fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
+                  }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ── EDUCATION ── */
+const Education = ({ accent }) => (
+  <section id="education" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
+    <SectionHeader icon={<Icon name="book" size={14} />} label="Education" title="Formazione" accent={accent} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
+      {data.education.map((edu, i) => (
+        <div key={i} style={{
+          background: 'var(--bg)', border: '1px solid var(--border)',
+          borderRadius: '12px', padding: '1.75rem',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{
+            position: 'absolute', top: 0, right: 0,
+            width: '80px', height: '80px',
+            background: `radial-gradient(circle at top right, ${accent}12, transparent)`,
+          }} />
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: '11px',
+            color: 'var(--text3)', marginBottom: '0.75rem', letterSpacing: '0.08em',
+          }}>{edu.period}</div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.3rem' }}>{edu.degree}</h3>
+          <div style={{ color: accent, fontSize: '14px', marginBottom: '0.3rem' }}>{edu.school}</div>
+          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '1rem' }}>{edu.field} · {edu.location}</div>
+          {edu.grade && <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.4rem 0.9rem',
+            background: `${accent}15`, border: `1px solid ${accent}30`,
+            borderRadius: '20px',
+          }}>
+            <Icon name="star" size={12} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: accent }}>{edu.grade}</span>
+          </div>}
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+/* ── PROJECTS ── */
+const Projects = ({ accent }) => (
+  <section id="projects" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
+    <SectionHeader icon={<Icon name="folder" size={14} />} label="Projects" title="Progetti" accent={accent} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      {data.projects.map((p, i) => (
+        <div key={i} style={{
+          background: 'var(--bg2)', border: '1px solid var(--border)',
+          borderRadius: '12px', padding: '1.75rem',
+          position: 'relative', overflow: 'hidden',
+          cursor: 'default',
+          transition: 'border-color 0.2s, transform 0.2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}50`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = ''; }}
+        >
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+            background: p.color,
+            borderRadius: '12px 12px 0 0',
+          }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: '8px',
+              background: `${p.color}15`, border: `1px solid ${p.color}30`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: p.color,
+            }}>
+              <Icon name="shield" size={18} />
+            </div>
+            <span style={{
+              padding: '0.2rem 0.6rem',
+              background: p.status === 'In corso' ? `${accent}20` : 'var(--bg3)',
+              border: `1px solid ${p.status === 'In corso' ? `${accent}40` : 'var(--border)'}`,
+              borderRadius: '20px', fontSize: '11px',
+              color: p.status === 'In corso' ? accent : 'var(--text3)',
+              fontFamily: 'var(--font-mono)',
+            }}>{p.status === 'In corso' ? '● ' : ''}{p.status}</span>
+          </div>
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.6rem' }}>{p.title}</h3>
+          <p style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '1.25rem' }}>{p.desc}</p>
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {p.tags.map(t => (
+              <span key={t} style={{
+                padding: '0.2rem 0.6rem', fontSize: '11px',
+                background: 'var(--bg3)', border: '1px solid var(--border)',
+                borderRadius: '4px', color: 'var(--text3)',
+                fontFamily: 'var(--font-mono)',
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+/* ── CONTACT ── */
+const Contact = ({ accent }) => (
+  <section id="contact" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
+    <SectionHeader icon={<Icon name="mail" size={14} />} label="Contact" title="Contatti" accent={accent} />
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '4rem', alignItems: 'start' }}>
+      <div>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '2rem' }}>
+          Sono aperto a nuove opportunità lavorative, collaborazioni e progetti interessanti. Non esitare a contattarmi!
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {[
+            { icon: 'mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
+            { icon: 'link', label: 'Linktree', value: 'linktr.ee/RickyCivi', href: 'https://linktr.ee/RickyCivi' },
+          ].map(item => (
+            <a key={item.label} href={item.href || '#'} target={item.href?.startsWith('http') ? '_blank' : undefined}
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '1rem',
+                padding: '1rem 1.25rem',
+                background: 'var(--bg)', border: '1px solid var(--border)',
+                borderRadius: '8px', textDecoration: 'none',
+                transition: 'border-color 0.2s',
+                cursor: item.href ? 'pointer' : 'default',
+              }}
+              onMouseEnter={e => { if (item.href) e.currentTarget.style.borderColor = `${accent}60`; }}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+            >
+              <div style={{ color: accent, flexShrink: 0 }}><Icon name={item.icon} size={18} /></div>
+              <div>
+                <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
+                <div style={{ fontSize: '14px', color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>{item.value}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div style={{
+        background: 'var(--bg)', border: '1px solid var(--border)',
+        borderRadius: '12px', padding: '2rem',
+      }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Invia un messaggio</h3>
+        {[
+          { label: 'Nome', placeholder: 'Il tuo nome', type: 'text' },
+          { label: 'Email', placeholder: 'la-tua@email.com', type: 'email' },
+          { label: 'Messaggio', placeholder: 'Ciao Riccardo, volevo...', type: 'textarea' },
+        ].map(field => (
+          <div key={field.label} style={{ marginBottom: '1.25rem' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem' }}>{field.label}</label>
+            {field.type === 'textarea'
+              ? <textarea placeholder={field.placeholder} rows={4} style={{
+                  width: '100%', padding: '0.75rem',
+                  background: 'var(--bg2)', border: '1px solid var(--border)',
+                  borderRadius: '6px', color: 'var(--text)', fontSize: '14px',
+                  fontFamily: 'var(--font-display)', resize: 'vertical',
+                  outline: 'none', transition: 'border-color 0.2s',
+                }}
+                  onFocus={e => e.target.style.borderColor = accent}
+                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                />
+              : <input type={field.type} placeholder={field.placeholder} style={{
+                  width: '100%', padding: '0.75rem',
+                  background: 'var(--bg2)', border: '1px solid var(--border)',
+                  borderRadius: '6px', color: 'var(--text)', fontSize: '14px',
+                  fontFamily: 'var(--font-display)', outline: 'none',
+                  transition: 'border-color 0.2s',
+                }}
+                  onFocus={e => e.target.style.borderColor = accent}
+                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                />
+            }
+          </div>
+        ))}
+        <button style={{
+          width: '100%', padding: '0.85rem',
+          background: accent, color: '#0a0c0f',
+          border: 'none', borderRadius: '6px',
+          fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 600,
+          cursor: 'pointer', letterSpacing: '0.03em',
+          transition: 'opacity 0.2s',
+        }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        >
+          Invia Messaggio →
+        </button>
+      </div>
+    </div>
+  </section>
+);
+
+/* ── FOOTER ── */
+const Footer = ({ accent }) => (
+  <footer style={{
+    padding: '2rem clamp(1.5rem, 8vw, 10rem)',
+    borderTop: '1px solid var(--border)',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    flexWrap: 'wrap', gap: '1rem',
+  }}>
+    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text3)' }}>
+      © 2025 <span style={{ color: accent }}>Riccardo Civiero</span> · Tutti i diritti riservati
+    </div>
+    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text3)' }}>
+      Built with ♥ · v1.0
+    </div>
+  </footer>
+);
+
+/* ── APP ── */
+const App = () => {
+  const accent = '#00e5a0';
+
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--accent', accent);
+  }, []);
+
+  return (
+    <div>
+      <Nav accent={accent} />
+      <Hero accent={accent} />
+      <About accent={accent} />
+      <Skills accent={accent} />
+      <Experience accent={accent} showTimeline={true} />
+      <Education accent={accent} />
+      <Contact accent={accent} />
+      <Footer accent={accent} />
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
