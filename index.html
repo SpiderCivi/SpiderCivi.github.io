@@ -46,6 +46,37 @@
 
     #root { min-height: 100vh; }
 
+    /* Shooting stars */
+    .shooting-star {
+      position: absolute;
+      width: 120px;
+      height: 1.5px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+      border-radius: 2px;
+      opacity: 0;
+      pointer-events: none;
+      animation: shoot linear infinite;
+    }
+    .shooting-star::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 6px 2px rgba(255,255,255,0.6);
+    }
+    .shooting-star:nth-child(1) { top: 12%; left: 10%; animation-duration: 6s; animation-delay: 0s;   transform: rotate(30deg); }
+    .shooting-star:nth-child(2) { top: 28%; left: 45%; animation-duration: 8s; animation-delay: 3.5s; transform: rotate(25deg); }
+    .shooting-star:nth-child(3) { top: 8%;  left: 65%; animation-duration: 7s; animation-delay: 1.8s; transform: rotate(35deg); }
+    @keyframes shoot {
+      0%   { opacity: 0; transform: rotate(inherit) translateX(0); }
+      5%   { opacity: 1; }
+      60%  { opacity: 0.8; }
+      100% { opacity: 0; transform: rotate(inherit) translateX(280px); }
+    }
+
     /* Grain overlay */
     body::before {
       content: '';
@@ -75,11 +106,13 @@ const data = {
     { label: "Linktree", url: "https://linktr.ee/RickyCivi", icon: "🌐" },
     { label: "GitHub", url: "https://github.com/SpiderCivi", icon: "⌥" },
   ],
-  about: "Ciao, mi chiamo Riccardo Civiero. Sono uno studente e sviluppatore con una solida formazione informatica acquisita all'ITIS E. Barsanti e una specializzazione in Cybersecurity all'ITS di Treviso. Ho maturato competenze pratiche nel problem solving, apprendimento attivo e gestione dello stress. Attualmente lavoro come Programmatore Informatico presso ReputationUP, dove mi occupo di sviluppo siti, app e sicurezza web.",
+  phone: "+39 333 1760358",
+  about: "Ciao, mi chiamo Riccardo Civiero. Sono uno sviluppatore e specialista in Cybersecurity con formazione all'ITIS E. Barsanti e una specializzazione in Cyber Security all'ITS Digital Academy di Treviso. Appassionato di sicurezza offensiva: partecipo a CTF e pratico su Hack The Box. Attualmente lavoro come Programmatore Informatico presso ReputationUP, dove mi occupo di sviluppo web, app e sicurezza informatica.",
   skills: {
     "Cybersecurity": ["Network Security", "Penetration Testing", "ONTAP Storage", "Virtualizzazione", "Server Maintenance"],
     "Sviluppo": ["Programmazione Web", "App Development", "Sicurezza Web", "Cloud Systems", "Help Desk"],
-    "Certificazioni": ["Cisco CCNA (in corso)", "Patente AM", "Patente B"],
+    "Linguaggi": ["C", "C#", "C++", "PHP", "Swift", "HTML", "CSS", "MySQL", "SQL"],
+    "Certificazioni": ["Cisco CCNA R&S ✓", "Cisco Intro to Cybersecurity ✓", "Cisco Intro to IoT ✓", "Bagnino AB (FIN)", "Patente AM/B"],
     "Soft Skills": ["Problem Solving", "Apprendimento Attivo", "Gestione Stress", "Lavoro in team", "Analisi Processi"],
   },
   languages: [
@@ -239,7 +272,8 @@ const Nav = ({ accent }) => {
 const CyberGlobe = ({ accent }) => {
   const canvasRef = React.useRef(null);
   const animRef = React.useRef(null);
-  const stateRef = React.useRef({ rotation: 0, attacks: [], impacts: [], lastAttack: 0, stars: null });
+  const stateRef = React.useRef({ rotation: 0, attacks: [], impacts: [], lastAttack: 0, stars: null, velocity: 0 });
+  const dragRef = React.useRef({ active: false, lastX: 0 });
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -433,7 +467,11 @@ const CyberGlobe = ({ accent }) => {
 
     const draw = (ts) => {
       ctx.clearRect(0, 0, W, H);
-      const rot = state.rotation += 0.0010;
+      if (!dragRef.current.active) {
+        state.velocity *= 0.95;
+        state.rotation += state.velocity + 0.0010;
+      }
+      const rot = state.rotation;
 
       // ── STARS ──
       state.stars.forEach(s => {
@@ -444,13 +482,6 @@ const CyberGlobe = ({ accent }) => {
         ctx.fill();
       });
 
-      // ── ATMOSPHERE HALO (outside globe) ──
-      const halo = ctx.createRadialGradient(cx, cy, R * 1.0, cx, cy, R * 1.7);
-      halo.addColorStop(0,   `rgba(${ar},${ag},${ab},0.08)`);
-      halo.addColorStop(0.4, `rgba(${ar},${ag},${ab},0.03)`);
-      halo.addColorStop(1,   'rgba(0,0,0,0)');
-      ctx.fillStyle = halo;
-      ctx.fillRect(0, 0, W, H);
 
       // ── OUTER GLOW ──
       const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 2.2);
@@ -712,18 +743,38 @@ const CyberGlobe = ({ accent }) => {
     return () => cancelAnimationFrame(animRef.current);
   }, [accent]);
 
+  const handleMouseDown = (e) => {
+    dragRef.current.active = true;
+    dragRef.current.lastX = e.clientX;
+    stateRef.current.velocity = 0;
+  };
+  const handleMouseMove = (e) => {
+    if (!dragRef.current.active) return;
+    const dx = e.clientX - dragRef.current.lastX;
+    dragRef.current.lastX = e.clientX;
+    stateRef.current.velocity = dx * 0.003;
+    stateRef.current.rotation += dx * 0.003;
+  };
+  const handleMouseUp = () => { dragRef.current.active = false; };
+
   return (
-    <canvas ref={canvasRef} style={{
-      position: 'absolute',
-      top: '50%', right: '-2%',
-      transform: 'translateY(-50%)',
-      width: 'min(540px, 50vw)',
-      height: 'min(600px, 55vw)',
-      pointerEvents: 'none',
-      opacity: 0.95,
-      WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
-      maskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
-    }} />
+    <canvas ref={canvasRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{
+        position: 'absolute',
+        top: '50%', right: '-2%',
+        transform: 'translateY(-50%)',
+        width: 'min(540px, 50vw)',
+        height: 'min(600px, 55vw)',
+        pointerEvents: 'auto',
+        cursor: 'grab',
+        opacity: 0.95,
+        WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
+        maskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
+      }} />
   );
 };
 
@@ -777,6 +828,10 @@ const Hero = ({ accent }) => {
         opacity: 0.25,
         maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
       }} />
+      {/* Shooting stars */}
+      <div className="shooting-star" />
+      <div className="shooting-star" />
+      <div className="shooting-star" />
       {/* Cyber Globe */}
       <CyberGlobe accent={accent} />
 
@@ -1160,6 +1215,7 @@ const Contact = ({ accent }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {[
             { icon: 'mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
+            { icon: 'phone', label: 'Telefono', value: data.phone, href: `tel:${data.phone}` },
             { icon: 'link', label: 'Linktree', value: 'linktr.ee/RickyCivi', href: 'https://linktr.ee/RickyCivi' },
           ].map(item => (
             <a key={item.label} href={item.href || '#'} target={item.href?.startsWith('http') ? '_blank' : undefined}
