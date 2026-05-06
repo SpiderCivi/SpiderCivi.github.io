@@ -1,6 +1,6 @@
 # Riccardo Civiero — Portfolio
 
-Personal portfolio website for Riccardo Civiero, Cybersecurity & Software Developer.
+Personal portfolio website, Cybersecurity & Software Developer.
 
 🌐 **Live site:** [https://spidercivi.github.io](https://spidercivi.github.io)
 
