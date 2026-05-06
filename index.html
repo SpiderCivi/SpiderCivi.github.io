@@ -49,32 +49,60 @@
     /* Shooting stars */
     .shooting-star {
       position: absolute;
-      width: 120px;
-      height: 1.5px;
-      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
-      border-radius: 2px;
-      opacity: 0;
       pointer-events: none;
-      animation: shoot linear infinite;
+      width: 160px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.15) 20%,
+        rgba(255,255,255,1) 80%,
+        rgba(255,255,255,0) 100%
+      );
+      filter: drop-shadow(0 0 4px rgba(180,220,255,0.9));
     }
-    .shooting-star::after {
+    .shooting-star::before {
       content: '';
       position: absolute;
       right: 0; top: 50%;
       transform: translateY(-50%);
-      width: 4px; height: 4px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 6px 2px rgba(255,255,255,0.6);
+      box-shadow: 0 0 8px 3px rgba(180,220,255,0.8), 0 0 16px 6px rgba(100,180,255,0.3);
     }
-    .shooting-star:nth-child(1) { top: 12%; left: 10%; animation-duration: 6s; animation-delay: 0s;   transform: rotate(30deg); }
-    .shooting-star:nth-child(2) { top: 28%; left: 45%; animation-duration: 8s; animation-delay: 3.5s; transform: rotate(25deg); }
-    .shooting-star:nth-child(3) { top: 8%;  left: 65%; animation-duration: 7s; animation-delay: 1.8s; transform: rotate(35deg); }
-    @keyframes shoot {
-      0%   { opacity: 0; transform: rotate(inherit) translateX(0); }
-      5%   { opacity: 1; }
-      60%  { opacity: 0.8; }
-      100% { opacity: 0; transform: rotate(inherit) translateX(280px); }
+    .shooting-star:nth-child(1) {
+      top: 10%; left: 5%;
+      animation: shoot1 5.5s ease-in infinite;
+      animation-delay: 0.5s;
+    }
+    .shooting-star:nth-child(2) {
+      top: 22%; left: 38%;
+      animation: shoot2 7s ease-in infinite;
+      animation-delay: 3.2s;
+    }
+    .shooting-star:nth-child(3) {
+      top: 6%; left: 62%;
+      animation: shoot3 6.2s ease-in infinite;
+      animation-delay: 1.6s;
+    }
+    @keyframes shoot1 {
+      0%   { opacity: 0;   transform: rotate(28deg) translateX(0); }
+      6%   { opacity: 1;   transform: rotate(28deg) translateX(40px); }
+      80%  { opacity: 0.7; transform: rotate(28deg) translateX(320px); }
+      100% { opacity: 0;   transform: rotate(28deg) translateX(380px); }
+    }
+    @keyframes shoot2 {
+      0%   { opacity: 0;   transform: rotate(22deg) translateX(0); }
+      6%   { opacity: 1;   transform: rotate(22deg) translateX(40px); }
+      80%  { opacity: 0.7; transform: rotate(22deg) translateX(300px); }
+      100% { opacity: 0;   transform: rotate(22deg) translateX(360px); }
+    }
+    @keyframes shoot3 {
+      0%   { opacity: 0;   transform: rotate(32deg) translateX(0); }
+      6%   { opacity: 1;   transform: rotate(32deg) translateX(40px); }
+      80%  { opacity: 0.7; transform: rotate(32deg) translateX(340px); }
+      100% { opacity: 0;   transform: rotate(32deg) translateX(400px); }
     }
 
     /* Grain overlay */
@@ -483,13 +511,6 @@ const CyberGlobe = ({ accent }) => {
       });
 
 
-      // ── OUTER GLOW ──
-      const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 2.2);
-      outerGlow.addColorStop(0,   `rgba(${ar},${ag},${ab},0.06)`);
-      outerGlow.addColorStop(0.35,`rgba(0,100,220,0.04)`);
-      outerGlow.addColorStop(1,   'rgba(0,0,0,0)');
-      ctx.fillStyle = outerGlow;
-      ctx.fillRect(0, 0, W, H);
 
       // ── CLIP to globe ──
       ctx.save();
@@ -497,18 +518,18 @@ const CyberGlobe = ({ accent }) => {
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
       ctx.clip();
 
-      // Globe body — deep dark with faint tint
+      // Globe body — deep dark
       const fill = ctx.createRadialGradient(cx - R*0.38, cy - R*0.38, R*0.04, cx, cy, R);
-      fill.addColorStop(0,   `rgba(${ar},${ag},${ab},0.07)`);
-      fill.addColorStop(0.35,'rgba(4,8,18,0.92)');
-      fill.addColorStop(1,   'rgba(1,3,9,0.98)');
+      fill.addColorStop(0,   'rgba(8,14,28,0.85)');
+      fill.addColorStop(0.35,'rgba(4,8,18,0.95)');
+      fill.addColorStop(1,   'rgba(1,3,9,0.99)');
       ctx.fillStyle = fill;
       ctx.fillRect(cx - R, cy - R, R*2, R*2);
 
       // ── SPECULAR HIGHLIGHT ──
       const spec = ctx.createRadialGradient(cx - R*0.38, cy - R*0.4, 0, cx - R*0.28, cy - R*0.3, R*0.7);
-      spec.addColorStop(0,   'rgba(255,255,255,0.07)');
-      spec.addColorStop(0.45,`rgba(${ar},${ag},${ab},0.03)`);
+      spec.addColorStop(0,   'rgba(255,255,255,0.09)');
+      spec.addColorStop(0.45,'rgba(100,160,255,0.03)');
       spec.addColorStop(1,   'rgba(0,0,0,0)');
       ctx.fillStyle = spec;
       ctx.fillRect(cx - R, cy - R, R*2, R*2);
