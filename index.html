@@ -445,10 +445,9 @@ const CyberGlobe = ({ accent }) => {
       });
 
       // ── ATMOSPHERE HALO (outside globe) ──
-      const halo = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.55);
-      halo.addColorStop(0,   `rgba(${ar},${ag},${ab},0.28)`);
-      halo.addColorStop(0.25,`rgba(${ar},${ag},${ab},0.12)`);
-      halo.addColorStop(0.55,`rgba(0,140,255,0.05)`);
+      const halo = ctx.createRadialGradient(cx, cy, R * 1.0, cx, cy, R * 1.7);
+      halo.addColorStop(0,   `rgba(${ar},${ag},${ab},0.08)`);
+      halo.addColorStop(0.4, `rgba(${ar},${ag},${ab},0.03)`);
       halo.addColorStop(1,   'rgba(0,0,0,0)');
       ctx.fillStyle = halo;
       ctx.fillRect(0, 0, W, H);
@@ -722,6 +721,8 @@ const CyberGlobe = ({ accent }) => {
       height: 'min(600px, 55vw)',
       pointerEvents: 'none',
       opacity: 0.95,
+      WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
+      maskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
     }} />
   );
 };
@@ -831,20 +832,6 @@ const Hero = ({ accent }) => {
           >
             Contattami →
           </button>
-          <a href={`mailto:${data.email}`} style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.75rem 1.5rem',
-            border: `1px solid ${accent}40`, borderRadius: '6px',
-            fontFamily: 'var(--font-mono)', fontSize: '13px',
-            color: accent, textDecoration: 'none',
-            transition: 'border-color 0.15s, background 0.15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.background = `${accent}12`; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = `${accent}40`; e.currentTarget.style.background = 'transparent'; }}
-          >
-            <Icon name="mail" size={14} />
-            {data.email}
-          </a>
         </div>
 
         {/* Stats */}
