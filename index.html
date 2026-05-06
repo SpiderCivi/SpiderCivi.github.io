@@ -1177,7 +1177,6 @@ const Contact = ({ accent }) => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {[
             { icon: 'mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
-            { icon: 'phone', label: 'Telefono', value: data.phone, href: `tel:${data.phone}` },
             { icon: 'link', label: 'Linktree', value: 'linktr.ee/RickyCivi', href: 'https://linktr.ee/RickyCivi' },
           ].map(item => (
             <a key={item.label} href={item.href || '#'} target={item.href?.startsWith('http') ? '_blank' : undefined}
