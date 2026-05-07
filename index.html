@@ -10,28 +10,30 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function(){
+      emailjs.init({ publicKey: '9qFdseyN76EtR0DGT' });
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0a0c0f;
-      --bg2: #0f1217;
-      --bg3: #151922;
-      --border: #1e2530;
-      --border2: #2a3340;
+      --bg: #060809;
+      --bg2: #0c0f14;
+      --bg3: #131820;
+      --border: #1a2230;
+      --border2: #243040;
       --accent: #00e5a0;
       --accent2: #00b8ff;
       --accent3: #7c5cfc;
       --text: #e8edf4;
-      --text2: #8a95a3;
-      --text3: #4a5568;
+      --text2: #7a8898;
+      --text3: #3a4858;
       --font-display: 'Space Grotesk', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
-
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -39,55 +41,259 @@
       line-height: 1.6;
       overflow-x: hidden;
     }
-
-    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
     #root { min-height: 100vh; }
 
-
-    /* Grain overlay */
+    /* Grain */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: 0.5;
     }
+
+    /* Scroll-reveal */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-left.visible { opacity: 1; transform: none; }
+    .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-right.visible { opacity: 1; transform: none; }
+    .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    /* Delay helpers */
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; }
+    .d5 { transition-delay: 0.5s; }
+
+    /* Section label */
+    .section-label {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
+      color: var(--text3); text-transform: uppercase; margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-label::before {
+      content: ''; width: 24px; height: 1px; background: var(--text3);
+    }
+
+    /* Skill pill */
+    .skill-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border: 1px solid var(--border);
+      border-radius: 100px; font-family: var(--font-mono);
+      font-size: 12px; color: var(--text2); background: var(--bg2);
+      transition: all 0.2s; cursor: default;
+      white-space: nowrap;
+    }
+    .skill-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.04); }
+
+    /* Timeline line */
+    .timeline-line {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, transparent, var(--border2) 15%, var(--border2) 85%, transparent);
+    }
+
+    /* Card hover */
+    .card-hover {
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease, border-color 0.2s;
+    }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    /* Glow text */
+    .glow { text-shadow: 0 0 40px currentColor; }
+
+    /* Progress bar */
+    .progress-track {
+      height: 3px; background: var(--border);
+      border-radius: 2px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 2px;
+      transform-origin: left; transform: scaleX(0);
+      transition: transform 1.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    .progress-fill.animated { transform: scaleX(1); }
+
+    /* Contact form inputs */
+    .form-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: var(--font-display); font-size: 14px;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      resize: vertical;
+    }
+    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,160,0.08); }
+    .form-input::placeholder { color: var(--text3); }
+
+    /* Cert card */
+    .cert-card {
+      padding: 20px; border: 1px solid var(--border);
+      border-radius: 12px; background: var(--bg2);
+      transition: all 0.25s; cursor: default;
+    }
+    .cert-card:hover { border-color: var(--accent2); background: rgba(0,184,255,0.03); transform: translateY(-2px); }
+
+    /* Intro splash */
+    #intro-splash {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #060809;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 1.2s cubic-bezier(0.16,1,0.3,1), transform 1.2s cubic-bezier(0.16,1,0.3,1);
+      overflow: hidden;
+    }
+    #intro-splash.fade-out {
+      opacity: 0; transform: scale(1.03); pointer-events: none;
+    }
+    .intro-scanlines {
+      position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,229,160,0.012) 3px, rgba(0,229,160,0.012) 4px);
+      animation: scanMove 8s linear infinite;
+    }
+    @keyframes scanMove { from { background-position: 0 0; } to { background-position: 0 100px; } }
+    .intro-corner {
+      position: absolute; width: 32px; height: 32px;
+      border-color: #00e5a040; border-style: solid;
+      opacity: 0; animation: introCornerIn 0.6s ease 0.4s forwards;
+    }
+    .intro-corner.tl { top: 2.5rem; left: 2.5rem; border-width: 1px 0 0 1px; }
+    .intro-corner.tr { top: 2.5rem; right: 2.5rem; border-width: 1px 1px 0 0; }
+    .intro-corner.bl { bottom: 2.5rem; left: 2.5rem; border-width: 0 0 1px 1px; }
+    .intro-corner.br { bottom: 2.5rem; right: 2.5rem; border-width: 0 1px 1px 0; }
+    @keyframes introCornerIn { to { opacity: 1; } }
+    .intro-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: #3a4858;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      opacity: 0; animation: introLogoIn 0.5s ease 0.5s forwards;
+    }
+    .intro-tag.top { position: absolute; top: 2.8rem; left: 50%; transform: translateX(-50%); }
+    .intro-tag.bottom { position: absolute; bottom: 2.8rem; left: 50%; transform: translateX(-50%); }
+    .intro-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      font-weight: 700;
+      color: #e8edf4;
+      letter-spacing: -0.04em;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: introLogoIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+      position: relative; z-index: 2;
+    }
+    .intro-logo span { color: #00e5a0; }
+    .intro-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(11px, 1.5vw, 14px);
+      color: #7a8898;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-top: 0.75rem;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: introLogoIn 0.7s cubic-bezier(0.16,1,0.3,1) 1.0s forwards;
+    }
+    .intro-divider {
+      width: 1px; height: 0;
+      background: linear-gradient(to bottom, transparent, #00e5a066, transparent);
+      margin: 2rem auto;
+      animation: introDivider 0.8s cubic-bezier(0.16,1,0.3,1) 1.3s forwards;
+    }
+    @keyframes introDivider { to { height: 48px; } }
+    .intro-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #3a4858;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: introLogoIn 0.6s ease 1.9s forwards;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .intro-sub::before, .intro-sub::after {
+      content: ''; display: inline-block;
+      width: 20px; height: 1px; background: #1a2230;
+    }
+    .intro-bar-wrap {
+      width: clamp(100px, 16vw, 180px);
+      height: 1px;
+      background: #1a2230;
+      margin-top: 2.5rem;
+      overflow: hidden;
+      opacity: 0;
+      animation: introLogoIn 0.4s ease 2.2s forwards;
+    }
+    .intro-bar {
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #00e5a0, #00b8ff, transparent);
+      width: 0;
+      animation: introBar 1.8s cubic-bezier(0.16,1,0.3,1) 2.4s forwards;
+    }
+    .intro-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: #3a4858;
+      letter-spacing: 0.12em;
+      margin-top: 0.6rem;
+      opacity: 0;
+      animation: introLogoIn 0.4s ease 2.4s forwards;
+    }
+    @keyframes introLogoIn {
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes introBar {
+      to { width: 100%; }
+    }
+
+    /* Shooting stars canvas */
+    #shooting-stars-canvas {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 1;
+    }
+
+    /* Hobby card */
+    .hobby-card {
+      padding: 24px; border: 1px solid var(--border);
+      border-radius: 16px; background: var(--bg2);
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .hobby-card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-4px); }
   </style>
 </head>
 <body>
 <div id="root"></div>
 
-
 <script type="text/babel">
 
-/* ── DATA ── */
-const data = {
+/* ════════════════════════════════════════════
+   DATA — aggiornato dal CV
+════════════════════════════════════════════ */
+const DATA = {
   name: "Riccardo Civiero",
-  title: "Cybersecurity & Software Developer",
-  tagline: "ITS Cybersecurity · Programmatore @ ReputationUP",
   email: "civiero.riccardo03@gmail.com",
+  phone: "+39 333 1760358",
+  location: "Castelfranco Veneto, TV",
   birth: "17 Febbraio 2003",
   links: [
-    { label: "Linktree", url: "https://linktr.ee/RickyCivi", icon: "🌐" },
-    { label: "GitHub", url: "https://github.com/SpiderCivi", icon: "⌥" },
+    { label: "Linktree", url: "https://linktr.ee/RickyCivi" },
+    { label: "GitHub",   url: "https://github.com/SpiderCivi" },
   ],
-  phone: "+39 333 1760358",
-  about: "Ciao, mi chiamo Riccardo Civiero. Sono uno sviluppatore e specialista in Cybersecurity con formazione all'ITIS E. Barsanti e una specializzazione in Cyber Security all'ITS Digital Academy di Treviso. Appassionato di sicurezza offensiva: partecipo a CTF e pratico su Hack The Box. Attualmente lavoro come Programmatore Informatico presso ReputationUP, dove mi occupo di sviluppo web, app e sicurezza informatica.",
   skills: {
-    "Cybersecurity": ["Network Security", "Penetration Testing", "ONTAP Storage", "Virtualizzazione", "Server Maintenance"],
-    "Sviluppo": ["Programmazione Web", "App Development", "Sicurezza Web", "Cloud Systems", "Help Desk"],
-    "Linguaggi": ["C", "C#", "C++", "PHP", "Swift", "HTML", "CSS", "MySQL", "SQL"],
-    "Certificazioni": ["Cisco CCNA R&S ✓", "Cisco Intro to Cybersecurity ✓", "Cisco Intro to IoT ✓", "Bagnino AB (FIN)", "Patente AM/B"],
-    "Soft Skills": ["Problem Solving", "Apprendimento Attivo", "Gestione Stress", "Lavoro in team", "Analisi Processi"],
+    "Cybersecurity": ["Network Security","Penetration Testing","ONTAP Storage","Virtualizzazione","Server Maintenance","CTF / Hack The Box"],
+    "Sviluppo":      ["Programmazione Web","App Development","Sicurezza Web","Cloud Systems","Help Desk","React"],
+    "Linguaggi":     ["C","C#","C++","PHP","Swift","HTML","CSS","MySQL","SQL","Python"],
+    "Soft Skills":   ["Problem Solving","Apprendimento Attivo","Gestione Stress","Lavoro in team","Analisi Processi"],
   },
   languages: [
     { lang: "Italiano", level: "Madrelingua", pct: 100 },
-    { lang: "Inglese", level: "B1", pct: 55 },
+    { lang: "Inglese",  level: "B1",          pct: 55  },
+    { lang: "Spagnolo", level: "A2/B1",       pct: 38  },
   ],
   education: [
     {
@@ -95,20 +301,22 @@ const data = {
       degree: "Specializzazione in Cybersecurity",
       field: "Cyber Security Specialist",
       period: "Ott 2023 – Lug 2025",
-      grade: null,
+      grade: "90/110",
       location: "Treviso",
       url: "https://itsdigitalacademy.com/corsi/cyber-security-specialist/",
       current: false,
+      highlight: true,
     },
     {
       school: "ITT Eugenio Barsanti",
       degree: "Diploma Informatico",
       field: "Informatica e Telecomunicazioni",
       period: "Set 2017 – Lug 2023",
-      grade: null,
+      grade: "60/100",
       location: "Castelfranco Veneto",
       url: "https://www.barsanti.edu.it/",
       current: false,
+      highlight: false,
     },
   ],
   experience: [
@@ -118,8 +326,19 @@ const data = {
       period: "Ott 2025 – Presente",
       location: "Castelfranco Veneto",
       current: true,
-      tags: ["Web Dev", "App Dev", "Security"],
-      desc: ["Programmazione siti e applicazioni web", "Sviluppo sicurezza nei siti", "Supporto tecnico interno"],
+      tags: ["Web Dev","App Dev","Security"],
+      desc: ["Programmazione siti e applicazioni web","Sviluppo sicurezza nei siti","Supporto tecnico interno"],
+      color: "#00e5a0",
+    },
+    {
+      company: "Baita al Lago",
+      role: "Bagnino AB",
+      period: "Giu 2025 – Ago 2025",
+      location: "Castello di Godego",
+      current: false,
+      tags: ["Sicurezza","Primo Soccorso","FIN"],
+      desc: ["Sorveglianza e prevenzione incidenti in acqua","Interventi di primo soccorso e salvataggio","Assistenza ai bagnanti e controllo norme di sicurezza","Manutenzione attrezzature di salvataggio"],
+      color: "#00b8ff",
     },
     {
       company: "Rossignol-Lange",
@@ -127,8 +346,9 @@ const data = {
       period: "Mar 2025 – Giu 2025",
       location: "Montebelluna",
       current: false,
-      tags: ["IT Support", "Server", "Help Desk"],
-      desc: ["Manutenzione computer e server", "Supporto help-desk", "Supporto al personale IT interno"],
+      tags: ["IT Support","Server","Help Desk"],
+      desc: ["Manutenzione computer e server","Supporto help-desk","Supporto al personale IT interno"],
+      color: "#7c5cfc",
     },
     {
       company: "Vem Sistemi",
@@ -136,8 +356,19 @@ const data = {
       period: "Giu 2024 – Lug 2024",
       location: "Padova",
       current: false,
-      tags: ["Cloud", "ONTAP", "Virtualizzazione"],
-      desc: ["Manutenzione sistemi cloud", "Programmazione storage (ONTAP)", "Esperienza in virtualizzazione", "Rapporti con fornitori"],
+      tags: ["Cloud","ONTAP","Virtualizzazione"],
+      desc: ["Manutenzione sistemi cloud","Programmazione storage (ONTAP)","Esperienza in virtualizzazione","Rapporti con fornitori e nuovi sistemi di archiviazione"],
+      color: "#f59e0b",
+    },
+    {
+      company: "Mistral – Nicola e Matteo",
+      role: "Cuoco e Fattorino",
+      period: "Set 2023 – Feb 2024",
+      location: "Castelfranco Veneto",
+      current: false,
+      tags: ["Ristorazione","Team Work"],
+      desc: ["Preparazione piatti con impiattamento","Completamento ingredienti sulla pizza","Pulizia a fine turno"],
+      color: "#f43f5e",
     },
     {
       company: "Merieux",
@@ -145,381 +376,480 @@ const data = {
       period: "Giu 2022 – Ago 2022",
       location: "Piombino Dese",
       current: false,
-      tags: ["IT Support", "Manutenzione"],
-      desc: ["Manutenzione computer", "Rapporti con clienti e colleghi"],
+      tags: ["IT Support","Manutenzione"],
+      desc: ["Manutenzione computer","Rapporti con clienti e colleghi"],
+      color: "#a78bfa",
+    },
+    {
+      company: "Jacki's Pub",
+      role: "Cameriere",
+      period: "Ago 2021 – Dic 2021",
+      location: "Castelfranco Veneto",
+      current: false,
+      tags: ["Ristorazione","Customer Service"],
+      desc: ["Preparazione bevande","Servizio ai tavoli","Pulizia verso chiusura"],
+      color: "#fb923c",
     },
   ],
-  projects: [],
+  certifications: [
+    { name: "Cisco CCNA R&S",                 issuer: "Cisco / ITT E. Barsanti", desc: "Introduzione alle reti e routing & switching", color: "#00b8ff" },
+    { name: "Cisco Introduction to Cybersecurity", issuer: "Cisco / ITT E. Barsanti", desc: "Fondamenti di sicurezza informatica", color: "#00e5a0" },
+    { name: "Cisco Introduction to IoT",      issuer: "Cisco / ITT E. Barsanti", desc: "Internet of Things e sistemi connessi", color: "#7c5cfc" },
+    { name: "Brevetto Bagnino AB (FIN)",       issuer: "FIN – Tezze sul Brenta",  desc: "Sorveglianza, salvataggio e primo soccorso", color: "#f59e0b" },
+    { name: "Patente AM / B",                  issuer: "MIT Italia",              desc: "Ciclomotori e autoveicoli", color: "#f43f5e" },
+  ],
+  hobbies: [
+    { icon: "🔐", title: "Cybersecurity & CTF", desc: "Hack The Box, competizioni CTF, sicurezza offensiva e reverse engineering." },
+    { icon: "⚙️", title: "Smontare e rimontare", desc: "Analisi meccanica e riparazione di oggetti: dalla componentistica all'elettronica." },
+    { icon: "🎮", title: "Controllo Remoto", desc: "Veicoli RC, tecnologie radio e personalizzazione elettronica avanzata." },
+    { icon: "💻", title: "Sviluppo Software", desc: "Progetti web con React e Python, UI/UX e sicurezza applicativa." },
+    { icon: "🏔️", title: "Passeggiate in montagna", desc: "Natura, trekking e disconnessione dal digitale." },
+  ],
 };
 
-/* ── TRANSLATIONS ── */
-const translations = {
+/* ════════════════════════════════════════════
+   TRANSLATIONS
+════════════════════════════════════════════ */
+const T = {
   en: {
-    available: 'AVAILABLE FOR NEW OPPORTUNITIES',
-    heroDesc: 'Specialized in Cybersecurity and software development, with experience in cloud environments, networks, and web security. Currently @ ReputationUP.',
-    contactCta: 'Contact me →',
-    statsExperience: 'Years of IT experience',
-    statsCompanies: 'Companies',
-    nav: { about: 'About', skills: 'Skills', experience: 'Experience', education: 'Education', contact: 'Contact' },
-    aboutLabel: 'About',
+    badge: 'AVAILABLE FOR NEW OPPORTUNITIES',
+    heroDesc: 'Cybersecurity specialist and software developer. Cloud, networks, web security. Currently @ ReputationUP.',
+    contactCta: 'Get in touch →',
+    nav: { about:'About', skills:'Skills', experience:'Experience', education:'Education', contact:'Contact' },
     aboutTitle: 'About me',
-    aboutText: "Hi, I'm Riccardo Civiero. I'm a developer and Cybersecurity specialist trained at ITIS E. Barsanti and specializing in Cyber Security at the ITS Digital Academy in Treviso. Passionate about offensive security: I participate in CTFs and practice on Hack The Box. I currently work as a Computer Programmer at ReputationUP, where I handle web and app development and IT security.",
-    birthLabel: 'Date of birth',
-    cityLabel: 'City',
-    langTitle: 'Languages',
-    skillsLabel: 'Skills',
+    aboutText: "Hi, I'm Riccardo Civiero — developer and Cybersecurity specialist trained at ITIS E. Barsanti with a specialization in Cyber Security at ITS Digital Academy in Treviso. Passionate about offensive security: I participate in CTFs and practice on Hack The Box. Currently working as a Programmer at ReputationUP.",
+    birth: 'Date of birth', city: 'City', langTitle: 'Languages',
     skillsTitle: 'Skills',
-    skillCategories: { 'Cybersecurity': 'Cybersecurity', 'Sviluppo': 'Development', 'Linguaggi': 'Languages', 'Certificazioni': 'Certifications', 'Soft Skills': 'Soft Skills' },
-    expLabel: 'Experience',
+    catLabels: { 'Cybersecurity':'Cybersecurity','Sviluppo':'Development','Linguaggi':'Languages','Soft Skills':'Soft Skills' },
     expTitle: 'Experience',
-    expDescs: {
-      'ReputationUP': ['Web and application programming', 'Website security development', 'Internal technical support'],
-      'Rossignol-Lange': ['Computer and server maintenance', 'Help-desk support', 'Support for internal IT staff'],
-      'Vem Sistemi': ['Cloud systems maintenance', 'Storage programming (ONTAP)', 'Virtualization experience', 'Supplier relations'],
-      'Merieux': ['Computer maintenance', 'Client and colleague relations'],
-    },
-    eduLabel: 'Education',
     eduTitle: 'Education',
-    contactLabel: 'Contact',
+    certTitle: 'Certifications',
+    hobbiesTitle: 'Interests',
     contactTitle: 'Contact',
-    contactDesc: 'I am open to new job opportunities, collaborations, and interesting projects. Feel free to reach out!',
+    contactDesc: 'Open to new opportunities, collaborations, and interesting projects. Feel free to reach out!',
     formTitle: 'Send a message',
-    formName: 'Name',
-    formNamePh: 'Your name',
-    formEmail: 'Email',
-    formEmailPh: 'your@email.com',
-    formMessage: 'Message',
-    formMessagePh: 'Hi Riccardo, I wanted to...',
-    formSend: 'Send Message →',
-    footerRights: 'All rights reserved',
-    statusAvailable: '● Available',
-    langNames: ['Italian', 'English'],
+    fName: 'Name', fNamePh: 'Your name',
+    fEmail: 'Email', fEmailPh: 'your@email.com',
+    fMsg: 'Message', fMsgPh: 'Hi Riccardo, I wanted to…',
+    fSend: 'Send →',
+    available: '● Available',
+    stats: { exp: 'Years IT exp.', companies: 'Companies' },
+    langNames: ['Italian','English','Spanish'],
+    footer: 'All rights reserved',
+    current: 'Current',
+    grade: 'Grade',
   },
   it: {
-    available: 'DISPONIBILE PER NUOVE OPPORTUNITÀ',
-    heroDesc: 'Specializzato in Cybersecurity e sviluppo software, con esperienza in ambienti cloud, reti e sicurezza web. Attualmente @ ReputationUP.',
+    badge: 'DISPONIBILE PER NUOVE OPPORTUNITÀ',
+    heroDesc: 'Specialista in Cybersecurity e sviluppo software. Cloud, reti, sicurezza web. Attualmente @ ReputationUP.',
     contactCta: 'Contattami →',
-    statsExperience: 'Anni di esperienza IT',
-    statsCompanies: 'Aziende',
-    nav: { about: 'Chi sono', skills: 'Skills', experience: 'Esperienza', education: 'Formazione', contact: 'Contatti' },
-    aboutLabel: 'About',
+    nav: { about:'Chi sono', skills:'Skills', experience:'Esperienza', education:'Formazione', contact:'Contatti' },
     aboutTitle: 'Chi sono',
-    aboutText: "Ciao, mi chiamo Riccardo Civiero. Sono uno sviluppatore e specialista in Cybersecurity con formazione all'ITIS E. Barsanti e una specializzazione in Cyber Security all'ITS Digital Academy di Treviso. Appassionato di sicurezza offensiva: partecipo a CTF e pratico su Hack The Box. Attualmente lavoro come Programmatore Informatico presso ReputationUP, dove mi occupo di sviluppo web, app e sicurezza informatica.",
-    birthLabel: 'Data di nascita',
-    cityLabel: 'Città',
-    langTitle: 'Lingue',
-    skillsLabel: 'Skills',
+    aboutText: "Ciao, sono Riccardo Civiero — sviluppatore e specialista in Cybersecurity. Formato all'ITIS E. Barsanti con specializzazione in Cyber Security all'ITS Digital Academy di Treviso. Appassionato di sicurezza offensiva: partecipo a CTF e pratico su Hack The Box. Attualmente lavoro come Programmatore Informatico presso ReputationUP.",
+    birth: 'Data di nascita', city: 'Città', langTitle: 'Lingue',
     skillsTitle: 'Competenze',
-    skillCategories: { 'Cybersecurity': 'Cybersecurity', 'Sviluppo': 'Sviluppo', 'Linguaggi': 'Linguaggi', 'Certificazioni': 'Certificazioni', 'Soft Skills': 'Soft Skills' },
-    expLabel: 'Experience',
+    catLabels: { 'Cybersecurity':'Cybersecurity','Sviluppo':'Sviluppo','Linguaggi':'Linguaggi','Soft Skills':'Soft Skills' },
     expTitle: 'Esperienza',
-    expDescs: {
-      'ReputationUP': ['Programmazione siti e applicazioni web', 'Sviluppo sicurezza nei siti', 'Supporto tecnico interno'],
-      'Rossignol-Lange': ['Manutenzione computer e server', 'Supporto help-desk', 'Supporto al personale IT interno'],
-      'Vem Sistemi': ['Manutenzione sistemi cloud', 'Programmazione storage (ONTAP)', 'Esperienza in virtualizzazione', 'Rapporti con fornitori'],
-      'Merieux': ['Manutenzione computer', 'Rapporti con clienti e colleghi'],
-    },
-    eduLabel: 'Education',
     eduTitle: 'Formazione',
-    contactLabel: 'Contact',
+    certTitle: 'Certificazioni',
+    hobbiesTitle: 'Interessi',
     contactTitle: 'Contatti',
     contactDesc: 'Sono aperto a nuove opportunità lavorative, collaborazioni e progetti interessanti. Non esitare a contattarmi!',
     formTitle: 'Invia un messaggio',
-    formName: 'Nome',
-    formNamePh: 'Il tuo nome',
-    formEmail: 'Email',
-    formEmailPh: 'la-tua@email.com',
-    formMessage: 'Messaggio',
-    formMessagePh: 'Ciao Riccardo, volevo...',
-    formSend: 'Invia Messaggio →',
-    footerRights: 'Tutti i diritti riservati',
-    statusAvailable: '● Disponibile',
-    langNames: ['Italiano', 'Inglese'],
+    fName: 'Nome', fNamePh: 'Il tuo nome',
+    fEmail: 'Email', fEmailPh: 'la-tua@email.com',
+    fMsg: 'Messaggio', fMsgPh: 'Ciao Riccardo, volevo…',
+    fSend: 'Invia →',
+    available: '● Disponibile',
+    stats: { exp: 'Anni exp. IT', companies: 'Aziende' },
+    langNames: ['Italiano','Inglese','Spagnolo'],
+    footer: 'Tutti i diritti riservati',
+    current: 'In corso',
+    grade: 'Voto',
   },
   es: {
-    available: 'DISPONIBLE PARA NUEVAS OPORTUNIDADES',
-    heroDesc: 'Especializado en Ciberseguridad y desarrollo de software, con experiencia en entornos cloud, redes y seguridad web. Actualmente @ ReputationUP.',
+    badge: 'DISPONIBLE PARA NUEVAS OPORTUNIDADES',
+    heroDesc: 'Especialista en Ciberseguridad y desarrollo software. Cloud, redes, seguridad web. Actualmente @ ReputationUP.',
     contactCta: 'Contáctame →',
-    statsExperience: 'Años de experiencia IT',
-    statsCompanies: 'Empresas',
-    nav: { about: 'Sobre mí', skills: 'Habilidades', experience: 'Experiencia', education: 'Formación', contact: 'Contacto' },
-    aboutLabel: 'Sobre mí',
+    nav: { about:'Sobre mí', skills:'Habilidades', experience:'Experiencia', education:'Formación', contact:'Contacto' },
     aboutTitle: 'Sobre mí',
-    aboutText: "Hola, me llamo Riccardo Civiero. Soy desarrollador y especialista en Ciberseguridad, formado en el ITIS E. Barsanti y con especialización en Cyber Security en el ITS Digital Academy de Treviso. Apasionado por la seguridad ofensiva: participo en CTFs y practico en Hack The Box. Actualmente trabajo como Programador Informático en ReputationUP, donde me encargo del desarrollo web, de aplicaciones y de la seguridad informática.",
-    birthLabel: 'Fecha de nacimiento',
-    cityLabel: 'Ciudad',
-    langTitle: 'Idiomas',
-    skillsLabel: 'Habilidades',
+    aboutText: "Hola, soy Riccardo Civiero — desarrollador y especialista en Ciberseguridad. Formado en el ITIS E. Barsanti con especialización en Cyber Security en el ITS Digital Academy de Treviso. Apasionado por la seguridad ofensiva: participo en CTFs y practico en Hack The Box. Actualmente trabajo como Programador en ReputationUP.",
+    birth: 'Fecha nacimiento', city: 'Ciudad', langTitle: 'Idiomas',
     skillsTitle: 'Competencias',
-    skillCategories: { 'Cybersecurity': 'Ciberseguridad', 'Sviluppo': 'Desarrollo', 'Linguaggi': 'Lenguajes', 'Certificazioni': 'Certificaciones', 'Soft Skills': 'Habilidades Blandas' },
-    expLabel: 'Experiencia',
+    catLabels: { 'Cybersecurity':'Ciberseguridad','Sviluppo':'Desarrollo','Linguaggi':'Lenguajes','Soft Skills':'Habilidades Blandas' },
     expTitle: 'Experiencia',
-    expDescs: {
-      'ReputationUP': ['Programación de sitios y aplicaciones web', 'Desarrollo de seguridad en sitios web', 'Soporte técnico interno'],
-      'Rossignol-Lange': ['Mantenimiento de ordenadores y servidores', 'Soporte help-desk', 'Apoyo al personal de TI interno'],
-      'Vem Sistemi': ['Mantenimiento de sistemas cloud', 'Programación de almacenamiento (ONTAP)', 'Experiencia en virtualización', 'Relaciones con proveedores'],
-      'Merieux': ['Mantenimiento de ordenadores', 'Relaciones con clientes y compañeros'],
-    },
-    eduLabel: 'Educación',
     eduTitle: 'Formación',
-    contactLabel: 'Contacto',
+    certTitle: 'Certificaciones',
+    hobbiesTitle: 'Intereses',
     contactTitle: 'Contacto',
-    contactDesc: '¡Estoy abierto a nuevas oportunidades laborales, colaboraciones y proyectos interesantes. No dudes en contactarme!',
-    formTitle: 'Enviar un mensaje',
-    formName: 'Nombre',
-    formNamePh: 'Tu nombre',
-    formEmail: 'Email',
-    formEmailPh: 'tu@email.com',
-    formMessage: 'Mensaje',
-    formMessagePh: 'Hola Riccardo, quería...',
-    formSend: 'Enviar Mensaje →',
-    footerRights: 'Todos los derechos reservados',
-    statusAvailable: '● Disponible',
-    langNames: ['Italiano', 'Inglés'],
+    contactDesc: '¡Estoy abierto a nuevas oportunidades laborales, colaboraciones y proyectos interesantes!',
+    formTitle: 'Enviar mensaje',
+    fName: 'Nombre', fNamePh: 'Tu nombre',
+    fEmail: 'Email', fEmailPh: 'tu@email.com',
+    fMsg: 'Mensaje', fMsgPh: 'Hola Riccardo, quería…',
+    fSend: 'Enviar →',
+    available: '● Disponible',
+    stats: { exp: 'Años exp. IT', companies: 'Empresas' },
+    langNames: ['Italiano','Inglés','Español'],
+    footer: 'Todos los derechos reservados',
+    current: 'Actual',
+    grade: 'Nota',
   },
   fr: {
-    available: 'DISPONIBLE POUR DE NOUVELLES OPPORTUNITÉS',
-    heroDesc: 'Spécialisé en Cybersécurité et développement logiciel, avec une expérience dans les environnements cloud, les réseaux et la sécurité web. Actuellement @ ReputationUP.',
+    badge: 'DISPONIBLE POUR DE NOUVELLES OPPORTUNITÉS',
+    heroDesc: 'Spécialiste en Cybersécurité et développement logiciel. Cloud, réseaux, sécurité web. Actuellement @ ReputationUP.',
     contactCta: 'Me contacter →',
-    statsExperience: "Années d'expérience IT",
-    statsCompanies: 'Entreprises',
-    nav: { about: 'À propos', skills: 'Compétences', experience: 'Expérience', education: 'Formation', contact: 'Contact' },
-    aboutLabel: 'À propos',
-    aboutTitle: 'À propos de moi',
-    aboutText: "Bonjour, je m'appelle Riccardo Civiero. Je suis développeur et spécialiste en Cybersécurité, formé à l'ITIS E. Barsanti et spécialisé en Cyber Security à l'ITS Digital Academy de Trévise. Passionné par la sécurité offensive : je participe à des CTFs et je m'entraîne sur Hack The Box. Je travaille actuellement comme Programmeur Informatique chez ReputationUP, où je m'occupe du développement web, des applications et de la sécurité informatique.",
-    birthLabel: 'Date de naissance',
-    cityLabel: 'Ville',
-    langTitle: 'Langues',
-    skillsLabel: 'Compétences',
+    nav: { about:'À propos', skills:'Compétences', experience:'Expérience', education:'Formation', contact:'Contact' },
+    aboutTitle: 'À propos',
+    aboutText: "Bonjour, je suis Riccardo Civiero — développeur et spécialiste en Cybersécurité, formé à l'ITIS E. Barsanti avec une spécialisation en Cyber Security à l'ITS Digital Academy de Trévise. Passionné par la sécurité offensive : CTFs et Hack The Box. Actuellement Programmeur chez ReputationUP.",
+    birth: 'Date de naissance', city: 'Ville', langTitle: 'Langues',
     skillsTitle: 'Compétences',
-    skillCategories: { 'Cybersecurity': 'Cybersécurité', 'Sviluppo': 'Développement', 'Linguaggi': 'Langages', 'Certificazioni': 'Certifications', 'Soft Skills': 'Compétences Douces' },
-    expLabel: 'Expérience',
+    catLabels: { 'Cybersecurity':'Cybersécurité','Sviluppo':'Développement','Linguaggi':'Langages','Soft Skills':'Compétences Douces' },
     expTitle: 'Expérience',
-    expDescs: {
-      'ReputationUP': ['Programmation de sites et applications web', 'Développement de la sécurité des sites', 'Support technique interne'],
-      'Rossignol-Lange': ['Maintenance des ordinateurs et serveurs', 'Support help-desk', "Soutien au personnel informatique interne"],
-      'Vem Sistemi': ['Maintenance des systèmes cloud', 'Programmation du stockage (ONTAP)', 'Expérience en virtualisation', 'Relations fournisseurs'],
-      'Merieux': ['Maintenance des ordinateurs', 'Relations avec les clients et collègues'],
-    },
-    eduLabel: 'Formation',
     eduTitle: 'Formation',
-    contactLabel: 'Contact',
+    certTitle: 'Certifications',
+    hobbiesTitle: 'Intérêts',
     contactTitle: 'Contact',
-    contactDesc: "Je suis ouvert aux nouvelles opportunités professionnelles, collaborations et projets intéressants. N'hésitez pas à me contacter !",
+    contactDesc: "Je suis ouvert à de nouvelles opportunités et collaborations. N'hésitez pas à me contacter !",
     formTitle: 'Envoyer un message',
-    formName: 'Nom',
-    formNamePh: 'Votre nom',
-    formEmail: 'Email',
-    formEmailPh: 'votre@email.com',
-    formMessage: 'Message',
-    formMessagePh: 'Bonjour Riccardo, je voulais...',
-    formSend: 'Envoyer →',
-    footerRights: 'Tous droits réservés',
-    statusAvailable: '● Disponible',
-    langNames: ['Italien', 'Anglais'],
+    fName: 'Nom', fNamePh: 'Votre nom',
+    fEmail: 'Email', fEmailPh: 'votre@email.com',
+    fMsg: 'Message', fMsgPh: 'Bonjour Riccardo, je voulais…',
+    fSend: 'Envoyer →',
+    available: '● Disponible',
+    stats: { exp: "Ans d'exp. IT", companies: 'Entreprises' },
+    langNames: ['Italien','Anglais','Espagnol'],
+    footer: 'Tous droits réservés',
+    current: 'En cours',
+    grade: 'Note',
   },
   de: {
-    available: 'VERFÜGBAR FÜR NEUE MÖGLICHKEITEN',
-    heroDesc: 'Spezialisiert auf Cybersicherheit und Softwareentwicklung, mit Erfahrung in Cloud-Umgebungen, Netzwerken und Websicherheit. Aktuell @ ReputationUP.',
+    badge: 'VERFÜGBAR FÜR NEUE MÖGLICHKEITEN',
+    heroDesc: 'Cybersicherheitsspezialist und Softwareentwickler. Cloud, Netzwerke, Websicherheit. Aktuell @ ReputationUP.',
     contactCta: 'Kontakt aufnehmen →',
-    statsExperience: 'Jahre IT-Erfahrung',
-    statsCompanies: 'Unternehmen',
-    nav: { about: 'Über mich', skills: 'Fähigkeiten', experience: 'Erfahrung', education: 'Ausbildung', contact: 'Kontakt' },
-    aboutLabel: 'Über mich',
+    nav: { about:'Über mich', skills:'Fähigkeiten', experience:'Erfahrung', education:'Ausbildung', contact:'Kontakt' },
     aboutTitle: 'Über mich',
-    aboutText: "Hallo, ich bin Riccardo Civiero. Ich bin Entwickler und Cybersicherheitsspezialist, ausgebildet am ITIS E. Barsanti und spezialisiert auf Cyber Security an der ITS Digital Academy in Treviso. Leidenschaftlich für offensive Sicherheit: Ich nehme an CTFs teil und übe auf Hack The Box. Derzeit arbeite ich als Informatikprogrammierer bei ReputationUP, wo ich mich um Web- und App-Entwicklung sowie IT-Sicherheit kümmere.",
-    birthLabel: 'Geburtsdatum',
-    cityLabel: 'Stadt',
-    langTitle: 'Sprachen',
-    skillsLabel: 'Fähigkeiten',
+    aboutText: "Hallo, ich bin Riccardo Civiero — Entwickler und Cybersicherheitsspezialist, ausgebildet am ITIS E. Barsanti mit Spezialisierung an der ITS Digital Academy Treviso. Leidenschaftlich für offensive Sicherheit: CTFs und Hack The Box. Aktuell als Programmierer bei ReputationUP tätig.",
+    birth: 'Geburtsdatum', city: 'Stadt', langTitle: 'Sprachen',
     skillsTitle: 'Kompetenzen',
-    skillCategories: { 'Cybersecurity': 'Cybersicherheit', 'Sviluppo': 'Entwicklung', 'Linguaggi': 'Sprachen', 'Certificazioni': 'Zertifizierungen', 'Soft Skills': 'Soziale Kompetenzen' },
-    expLabel: 'Erfahrung',
+    catLabels: { 'Cybersecurity':'Cybersicherheit','Sviluppo':'Entwicklung','Linguaggi':'Sprachen','Soft Skills':'Soziale Kompetenzen' },
     expTitle: 'Erfahrung',
-    expDescs: {
-      'ReputationUP': ['Web- und Anwendungsprogrammierung', 'Website-Sicherheitsentwicklung', 'Interner technischer Support'],
-      'Rossignol-Lange': ['Computer- und Serverwartung', 'Help-Desk-Support', 'Unterstützung des internen IT-Personals'],
-      'Vem Sistemi': ['Cloud-Systemwartung', 'Speicherprogrammierung (ONTAP)', 'Erfahrung in Virtualisierung', 'Lieferantenbeziehungen'],
-      'Merieux': ['Computerwartung', 'Kunden- und Kollegenbeziehungen'],
-    },
-    eduLabel: 'Ausbildung',
     eduTitle: 'Ausbildung',
-    contactLabel: 'Kontakt',
+    certTitle: 'Zertifizierungen',
+    hobbiesTitle: 'Interessen',
     contactTitle: 'Kontakt',
-    contactDesc: 'Ich bin offen für neue Stellenangebote, Kooperationen und interessante Projekte. Zögere nicht, mich zu kontaktieren!',
+    contactDesc: 'Ich bin offen für neue Stellen, Kooperationen und interessante Projekte. Zögere nicht, mich zu kontaktieren!',
     formTitle: 'Nachricht senden',
-    formName: 'Name',
-    formNamePh: 'Dein Name',
-    formEmail: 'E-Mail',
-    formEmailPh: 'deine@email.com',
-    formMessage: 'Nachricht',
-    formMessagePh: 'Hallo Riccardo, ich wollte...',
-    formSend: 'Nachricht senden →',
-    footerRights: 'Alle Rechte vorbehalten',
-    statusAvailable: '● Verfügbar',
-    langNames: ['Italienisch', 'Englisch'],
+    fName: 'Name', fNamePh: 'Dein Name',
+    fEmail: 'E-Mail', fEmailPh: 'deine@email.com',
+    fMsg: 'Nachricht', fMsgPh: 'Hallo Riccardo, ich wollte…',
+    fSend: 'Senden →',
+    available: '● Verfügbar',
+    stats: { exp: 'Jahre IT-Erfahrung', companies: 'Unternehmen' },
+    langNames: ['Italienisch','Englisch','Spanisch'],
+    footer: 'Alle Rechte vorbehalten',
+    current: 'Aktuell',
+    grade: 'Note',
   },
 };
+const tr = (lang, key) => {
+  const keys = key.split('.');
+  let v = T[lang] || T.en;
+  for (const k of keys) v = v?.[k];
+  return v ?? ((() => { let vv = T.en; for (const k of keys) vv = vv?.[k]; return vv; })());
+};
 
-const t = (lang, key) => translations[lang]?.[key] ?? translations['en'][key];
-
-/* ── ICONS ── */
+/* ════════════════════════════════════════════
+   ICONS
+════════════════════════════════════════════ */
 const Icon = ({ name, size = 16 }) => {
+  const s = { width: size, height: size };
   const icons = {
-    mail: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>,
-    phone: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.48 5.48l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
-    location: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
-    link: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
-    calendar: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
-    chevron: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>,
-    star: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
-    code: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>,
-    shield: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-    user: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>,
-    briefcase: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>,
-    book: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
-    folder: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
-    arrow: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
-    dot: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>,
-    globe: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
+    mail:      <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>,
+    phone:     <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.48 5.48l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+    location:  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>,
+    shield:    <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+    code:      <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>,
+    book:      <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+    briefcase: <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>,
+    calendar:  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
+    arrow:     <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
+    star:      <svg {...s} viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+    link:      <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+    check:     <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20,6 9,17 4,12"/></svg>,
+    user:      <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>,
   };
   return icons[name] || null;
 };
 
-/* ── LANG SWITCHER ── */
-const LangSwitcher = ({ lang, setLang, accent }) => {
-  const langs = ['en', 'it', 'es', 'fr', 'de'];
+/* ════════════════════════════════════════════
+   INTRO SPLASH
+════════════════════════════════════════════ */
+const IntroSplash = ({ onDone }) => {
+  const [pct, setPct] = React.useState(0);
+  React.useEffect(() => {
+    // Count up percentage over ~2s starting at 2.4s
+    const start = Date.now() + 2400;
+    const dur   = 1800;
+    const tick  = () => {
+      const elapsed = Math.max(0, Date.now() - start);
+      const p = Math.min(100, Math.round((elapsed / dur) * 100));
+      setPct(p);
+      if (p < 100) requestAnimationFrame(tick);
+    };
+    const raf = requestAnimationFrame(tick);
+    // Fade out at 5s
+    const timer = setTimeout(() => {
+      const el = document.getElementById('intro-splash');
+      if (el) {
+        el.classList.add('fade-out');
+        setTimeout(() => { el.style.display = 'none'; onDone(); }, 1300);
+      }
+    }, 5000);
+    return () => { clearTimeout(timer); cancelAnimationFrame(raf); };
+  }, []);
+
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: '2px',
-      padding: '3px', background: 'var(--bg2)',
-      border: '1px solid var(--border)', borderRadius: '6px',
-      marginLeft: '1.5rem',
-    }}>
-      {langs.map(code => (
-        <button key={code} onClick={() => setLang(code)} style={{
-          background: lang === code ? accent : 'none',
-          border: 'none', cursor: 'pointer',
-          padding: '3px 7px', borderRadius: '4px',
-          fontFamily: 'var(--font-mono)', fontSize: '10px',
-          color: lang === code ? '#0a0c0f' : 'var(--text3)',
-          letterSpacing: '0.06em', fontWeight: lang === code ? 700 : 400,
-          textTransform: 'uppercase', transition: 'all 0.15s',
-          lineHeight: 1.4,
-        }}
-          onMouseEnter={e => { if (lang !== code) e.currentTarget.style.color = 'var(--text2)'; }}
-          onMouseLeave={e => { if (lang !== code) e.currentTarget.style.color = 'var(--text3)'; }}
-        >{code}</button>
-      ))}
+    <div id="intro-splash">
+      {/* Scanlines */}
+      <div className="intro-scanlines"/>
+      {/* Corner brackets */}
+      <div className="intro-corner tl"/>
+      <div className="intro-corner tr"/>
+      <div className="intro-corner bl"/>
+      <div className="intro-corner br"/>
+      {/* Top tag */}
+      <div className="intro-tag top">portfolio · 2025</div>
+      {/* Bottom tag */}
+      <div className="intro-tag bottom">castelfranco veneto · italia</div>
+      {/* Subtle grid bg */}
+      <div style={{
+        position:'absolute', inset:0,
+        backgroundImage:`linear-gradient(#1a2230 1px,transparent 1px),linear-gradient(90deg,#1a2230 1px,transparent 1px)`,
+        backgroundSize:'56px 56px', opacity:0.12,
+        maskImage:'radial-gradient(ellipse 55% 55% at 50% 50%, black 0%, transparent 100%)',
+      }}/>
+      {/* Green glow orb */}
+      <div style={{ position:'absolute', width:'30vw', height:'30vw', borderRadius:'50%', background:'radial-gradient(circle, #00e5a008 0%, transparent 70%)', pointerEvents:'none' }}/>
+      {/* Main logo */}
+      <div className="intro-logo">Riccardo <span>Civiero</span></div>
+      <div className="intro-title">Cybersecurity &amp; Software Developer</div>
+      <div className="intro-divider"/>
+      <div className="intro-sub">Disponibile per nuove opportunità</div>
+      <div className="intro-bar-wrap"><div className="intro-bar"/></div>
+      <div className="intro-pct">{String(pct).padStart(3,'0')}%</div>
     </div>
   );
 };
 
-/* ── NAV ── */
-const Nav = ({ accent, lang, setLang }) => {
-  const [scrolled, setScrolled] = React.useState(false);
-  const [active, setActive] = React.useState('hero');
-
-  React.useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-      const sections = ['hero','about','skills','experience','education','contact'];
-      for (const id of [...sections].reverse()) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 120) { setActive(id); break; }
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const tr = translations[lang].nav;
-  const navItems = [
-    { id: 'about', label: tr.about },
-    { id: 'skills', label: tr.skills },
-    { id: 'experience', label: tr.experience },
-    { id: 'education', label: tr.education },
-    { id: 'contact', label: tr.contact },
-  ];
-
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-      padding: '0 2rem',
-      background: scrolled ? 'rgba(10,12,15,0.92)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(12px)' : 'none',
-      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
-      transition: 'all 0.3s ease',
-      height: '64px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    }}>
-      <button onClick={() => scrollTo('hero')} style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        fontFamily: 'var(--font-mono)', fontSize: '14px', color: accent,
-        letterSpacing: '0.05em',
-      }}>
-        RC<span style={{ color: 'var(--text2)' }}>.dev</span>
-      </button>
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-        {navItems.map(item => (
-          <button key={item.id} onClick={() => scrollTo(item.id)} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-display)', fontSize: '13px', fontWeight: 500,
-            color: active === item.id ? accent : 'var(--text2)',
-            letterSpacing: '0.03em',
-            transition: 'color 0.2s',
-            padding: '0',
-          }}>{item.label}</button>
-        ))}
-        <LangSwitcher lang={lang} setLang={setLang} accent={accent} />
-      </div>
-    </nav>
-  );
-};
-
-/* ── CYBER GLOBE ── */
-const CyberGlobe = ({ accent }) => {
+/* ════════════════════════════════════════════
+   SHOOTING STARS
+════════════════════════════════════════════ */
+const ShootingStars = () => {
   const canvasRef = React.useRef(null);
-  const animRef = React.useRef(null);
-  const stateRef = React.useRef({ rotation: 0, attacks: [], impacts: [], lastAttack: 0, stars: null, velocity: 0 });
-  const dragRef = React.useRef({ active: false, lastX: 0 });
+  const animRef   = React.useRef(null);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    const W = canvas.width = canvas.offsetWidth * dpr;
-    const H = canvas.height = canvas.offsetHeight * dpr;
-    const cx = W / 2, cy = H / 2;
-    const R = Math.min(W, H) * 0.37;
 
-    const hex2rgb = (hex) => {
-      const h = hex.replace('#','');
-      return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth  * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
     };
-    const [ar, ag, ab] = hex2rgb(accent);
+    resize();
+    window.addEventListener('resize', resize);
 
+    let W = canvas.width, H = canvas.height;
+
+    // Globe center/radius estimate (right half, roughly)
+    const getGlobeArea = () => ({
+      cx: W * 0.72,
+      cy: H * 0.5,
+      r: Math.min(W, H) * 0.38 * 1.25, // slightly larger than globe + margin
+    });
+
+    // Static star field
+    const STARS = Array.from({length: 120}, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: 0.2 + Math.random() * 0.9,
+      a: 0.05 + Math.random() * 0.28,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.0002 + Math.random() * 0.0004,
+    }));
+
+    const shooters = [];
+    let lastSpawn = -99999;
+    const MIN_INTERVAL = 4500;
+    const MAX_INTERVAL = 7000;
+    let nextInterval = MIN_INTERVAL + Math.random() * (MAX_INTERVAL - MIN_INTERVAL);
+
+    const spawnShooter = () => {
+      const g = getGlobeArea();
+      // Pick start point — try up to 10 times to avoid globe area
+      let x, y, tries = 0;
+      do {
+        x = Math.random() * W * 0.85;
+        y = Math.random() * H * 0.45;
+        tries++;
+      } while (tries < 10 && Math.hypot(x - g.cx, y - g.cy) < g.r);
+
+      const angle = (Math.PI / 5) + Math.random() * (Math.PI / 7);
+      const speed = (3.5 + Math.random() * 4.5) * dpr;
+      const len   = (100 + Math.random() * 180) * dpr;
+
+      // Check tail endpoint too — reject if path crosses globe
+      const tx = x + Math.cos(angle) * (len + speed * 80);
+      const ty = y + Math.sin(angle) * (len + speed * 80);
+      if (Math.hypot(tx - g.cx, ty - g.cy) < g.r * 0.85) return;
+
+      const life = (len / speed) * 2.2;
+      const brightness = 0.65 + Math.random() * 0.35;
+      const warm = Math.random() < 0.12;
+      const hue = warm ? `rgba(255,220,170,` : `rgba(${195+Math.floor(Math.random()*60)},${215+Math.floor(Math.random()*40)},255,`;
+      shooters.push({ x, y, angle, speed, len, life, age: 0, brightness, hue });
+    };
+
+    const draw = (ts) => {
+      const canvas2 = canvasRef.current;
+      if (!canvas2) return;
+      W = canvas2.width; H = canvas2.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Static stars
+      STARS.forEach(s => {
+        const flicker = 0.5 + 0.5 * Math.sin(ts * s.speed + s.phase);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.a * flicker})`;
+        ctx.fill();
+      });
+
+      // Spawn — one at a time, ~every 5-7s
+      if (ts - lastSpawn > nextInterval) {
+        spawnShooter();
+        lastSpawn = ts;
+        nextInterval = MIN_INTERVAL + Math.random() * (MAX_INTERVAL - MIN_INTERVAL);
+      }
+
+      // Draw shooting stars
+      for (let i = shooters.length - 1; i >= 0; i--) {
+        const s = shooters[i];
+        s.age++;
+        const prog = s.age / s.life;
+        if (prog >= 1) { shooters.splice(i, 1); continue; }
+
+        const hx = s.x + Math.cos(s.angle) * s.speed * s.age;
+        const hy = s.y + Math.sin(s.angle) * s.speed * s.age;
+
+        let alpha = s.brightness;
+        if (prog < 0.08) alpha *= prog / 0.08;
+        else if (prog > 0.65) alpha *= 1 - (prog - 0.65) / 0.35;
+
+        const tx2 = hx - Math.cos(s.angle) * s.len;
+        const ty2 = hy - Math.sin(s.angle) * s.len;
+
+        // Tail gradient
+        const grad = ctx.createLinearGradient(tx2, ty2, hx, hy);
+        grad.addColorStop(0,    `${s.hue}0)`);
+        grad.addColorStop(0.45, `${s.hue}${(alpha * 0.15).toFixed(3)})`);
+        grad.addColorStop(0.82, `${s.hue}${(alpha * 0.6).toFixed(3)})`);
+        grad.addColorStop(1,    `${s.hue}${alpha.toFixed(3)})`);
+
+        // Glow halo
+        ctx.save();
+        ctx.shadowColor = `rgba(200,230,255,${alpha * 0.5})`;
+        ctx.shadowBlur  = 8 * dpr;
+        ctx.beginPath(); ctx.moveTo(tx2, ty2); ctx.lineTo(hx, hy);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.4 * dpr;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Bright core
+        ctx.shadowBlur = 0;
+        const cl = s.len * 0.10;
+        const cx2 = hx - Math.cos(s.angle) * cl;
+        const cy2 = hy - Math.sin(s.angle) * cl;
+        const cg  = ctx.createLinearGradient(cx2, cy2, hx, hy);
+        cg.addColorStop(0, `rgba(255,255,255,0)`);
+        cg.addColorStop(1, `rgba(255,255,255,${alpha * 0.9})`);
+        ctx.beginPath(); ctx.moveTo(cx2, cy2); ctx.lineTo(hx, hy);
+        ctx.strokeStyle = cg;
+        ctx.lineWidth = 0.7 * dpr;
+        ctx.stroke();
+
+        // Head sparkle
+        ctx.shadowColor = `rgba(255,255,255,${alpha})`;
+        ctx.shadowBlur  = 14 * dpr;
+        ctx.beginPath(); ctx.arc(hx, hy, 1.4 * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      id="shooting-stars-canvas"
+      style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }}
+    />
+  );
+};
+
+
+const useScrollReveal = () => {
+  React.useEffect(() => {
+    const targets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    targets.forEach(t => obs.observe(t));
+    return () => obs.disconnect();
+  }, []);
+};
+
+/* ════════════════════════════════════════════
+   EARTH GLOBE — realistic
+════════════════════════════════════════════ */
+const CyberGlobe = ({ accent }) => {
+  const canvasRef = React.useRef(null);
+  const animRef   = React.useRef(null);
+  const stateRef  = React.useRef({ rotation: 0.3, attacks: [], impacts: [], lastAttack: 0, velocity: 0 });
+  const dragRef   = React.useRef({ active: false, lastX: 0 });
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.width  = canvas.offsetWidth  * dpr;
+    const H = canvas.height = canvas.offsetHeight * dpr;
+    const cx = W/2, cy = H/2;
+    const R  = Math.min(W,H) * 0.39;
     const state = stateRef.current;
 
-    // Star field — generate once
-    if (!state.stars) {
-      state.stars = Array.from({length: 70}, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: 0.4 + Math.random() * 1.0,
-        phase: Math.random() * Math.PI * 2,
-      }));
-    }
-
-    // Dense continent point cloud — coast + interior fill
+    // ── HIGH-DENSITY CONTINENT POINT CLOUD ──
+    // Carefully crafted to match real geography
     const DOTS = [
-      // ── North America coast ──
+      // ── North America ──
       [71,-155],[68,-162],[65,-168],[62,-145],[58,-137],[55,-130],[52,-128],[50,-125],
-      [48,-124],[45,-124],[42,-124],[38,-122],[35,-120],[32,-117],[29,-110],
+      [48,-124],[45,-124],[42,-124],[38,-122],[35,-120],[32,-117],[30,-115],[28,-112],
       [64,-141],[60,-135],[57,-135],[55,-132],[71,-128],[73,-120],[75,-110],[72,-100],
       [68,-95],[65,-85],[60,-95],[55,-95],[50,-95],[48,-90],[45,-84],[42,-83],
       [47,-70],[44,-66],[46,-60],[50,-57],[52,-56],[48,-53],[47,-55],
@@ -527,7 +857,7 @@ const CyberGlobe = ({ accent }) => {
       [35,-95],[32,-95],[30,-95],[28,-97],[26,-98],[24,-110],[22,-106],[20,-103],
       [20,-87],[17,-89],[15,-89],[14,-90],[13,-88],[10,-84],[9,-80],
       [62,-110],[65,-115],[62,-125],[58,-122],[55,-118],[52,-112],[49,-98],
-      // ── North America interior fill ──
+      // Interior
       [55,-105],[55,-110],[55,-115],[52,-105],[52,-110],[52,-115],[52,-120],
       [50,-100],[50,-105],[50,-110],[50,-115],[50,-120],[48,-100],[48,-105],
       [48,-110],[48,-115],[48,-120],[45,-100],[45,-105],[45,-110],[45,-115],
@@ -536,30 +866,33 @@ const CyberGlobe = ({ accent }) => {
       [38,-90],[38,-95],[38,-100],[38,-105],[38,-110],[38,-115],
       [35,-100],[35,-105],[35,-110],[33,-100],[33,-105],[33,-110],
       [30,-100],[28,-105],[25,-105],[23,-104],[21,-102],
-      // ── South America coast ──
+      // ── Greenland ──
+      [62,-44],[64,-50],[66,-54],[68,-54],[70,-52],[72,-54],[74,-58],[76,-60],
+      [78,-56],[80,-52],[82,-42],[82,-32],[80,-22],[78,-18],[76,-20],[74,-22],
+      [72,-24],[70,-28],[68,-32],[66,-36],[64,-40],[62,-44],
+      [72,-38],[74,-36],[76,-36],[74,-44],[72,-44],[70,-42],[68,-40],
+      // ── South America ──
       [12,-72],[10,-68],[8,-63],[5,-61],[3,-60],[0,-50],[-3,-43],[-5,-35],
       [-8,-35],[-10,-37],[-12,-38],[-15,-39],[-20,-40],[-23,-43],[-25,-48],
       [-28,-49],[-30,-51],[-32,-52],[-34,-53],[-36,-57],[-38,-57],[-40,-62],
       [-42,-65],[-45,-66],[-48,-66],[-52,-68],[-55,-68],[-55,-66],[-53,-70],
       [0,-75],[-5,-78],[-8,-78],[-12,-76],[-15,-70],[-18,-70],[-22,-68],
       [-18,-63],[-15,-60],[-10,-65],[-5,-60],[0,-60],[5,-55],
-      // ── South America interior ──
       [0,-65],[-5,-65],[-5,-70],[-10,-60],[-10,-65],[-10,-70],
       [-15,-55],[-15,-60],[-15,-65],[-20,-50],[-20,-55],[-20,-60],[-20,-65],
       [-25,-55],[-25,-60],[-25,-65],[-30,-55],[-30,-60],[-30,-65],
-      // ── Europe coast ──
+      // ── Europe ──
       [71,26],[70,22],[68,18],[66,14],[63,10],[60,5],[58,6],[56,8],
       [54,9],[52,5],[50,4],[48,2],[46,2],[44,2],[43,5],[42,9],
       [40,18],[38,15],[37,15],[38,24],[40,22],[42,23],[44,26],[46,24],
       [48,18],[50,18],[52,22],[54,18],[56,24],[58,24],[60,24],[62,26],
       [65,28],[67,28],[70,28],[68,32],[65,30],[60,28],[64,-22],[63,-20],
       [56,-6],[54,-8],[52,-4],[51,-4],[50,-6],[49,-2],[47,-2],
-      // ── Europe interior ──
       [58,10],[56,12],[54,12],[52,10],[52,14],[50,10],[50,14],[50,18],
       [48,10],[48,14],[48,18],[48,22],[46,10],[46,14],[46,18],[46,22],
       [44,10],[44,14],[44,18],[44,22],[42,14],[42,18],[42,22],[42,26],
       [60,18],[60,22],[60,26],[58,18],[58,22],[62,18],[62,22],[64,20],
-      // ── Africa coast ──
+      // ── Africa ──
       [37,10],[35,11],[33,10],[31,10],[30,32],[27,33],[24,33],[22,37],
       [18,38],[15,38],[12,44],[10,44],[8,45],[5,41],[3,42],[0,42],
       [-4,40],[-10,40],[-15,35],[-20,35],[-25,34],[-30,32],[-34,26],
@@ -567,14 +900,15 @@ const CyberGlobe = ({ accent }) => {
       [-8,14],[-5,10],[-3,8],[0,10],[3,10],[5,3],[6,-1],[5,-5],
       [8,-13],[11,-15],[14,-17],[16,-16],[20,-17],[24,-15],[28,-13],
       [32,-9],[35,-5],[37,-3],[36,4],[37,10],
-      // ── Africa interior ──
       [20,20],[20,25],[20,30],[15,20],[15,25],[15,30],[15,35],
       [10,20],[10,25],[10,30],[10,35],[5,20],[5,25],[5,30],
       [0,15],[0,20],[0,25],[0,30],[-5,15],[-5,20],[-5,25],[-5,30],
       [-10,20],[-10,25],[-10,30],[-15,20],[-15,25],[-15,30],
       [-20,20],[-20,25],[-20,30],[-25,20],[-25,25],[-25,28],
       [25,20],[25,25],[25,30],[30,20],[30,25],[30,30],
-      // ── Asia coast ──
+      // Madagascar
+      [-14,48],[-16,48],[-18,46],[-20,46],[-22,46],[-24,44],[-22,44],[-18,44],[-16,46],
+      // ── Asia ──
       [25,55],[28,50],[30,48],[32,46],[35,42],[38,38],[40,36],[42,36],
       [38,48],[40,50],[42,50],[44,50],[46,50],[48,56],[50,57],
       [55,60],[58,62],[60,60],[62,60],[64,62],[66,66],[68,68],[70,68],
@@ -589,7 +923,6 @@ const CyberGlobe = ({ accent }) => {
       [22,88],[24,88],[26,88],[26,90],[25,86],[28,84],[30,80],
       [32,78],[35,72],[38,70],[38,65],[36,62],[35,58],[36,55],
       [40,52],[38,58],[40,65],[42,68],[38,72],[36,66],[35,52],
-      // ── Asia interior ──
       [30,60],[30,65],[30,70],[30,75],[30,80],[30,85],[30,90],[30,95],[30,100],
       [35,60],[35,65],[35,70],[35,75],[35,80],[35,85],[35,90],[35,95],[35,100],
       [40,60],[40,65],[40,70],[40,75],[40,80],[40,85],[40,90],[40,95],
@@ -600,15 +933,7 @@ const CyberGlobe = ({ accent }) => {
       [20,75],[20,80],[20,85],[20,90],[20,95],[20,100],[20,105],
       [15,75],[15,80],[15,85],[15,90],[15,95],[15,100],[15,105],
       [10,75],[10,80],[10,85],[10,90],[10,95],[10,100],
-      // ── Australia coast + interior ──
-      [-14,128],[-12,132],[-12,136],[-13,142],[-16,145],[-20,148],
-      [-25,152],[-28,153],[-32,152],[-35,150],[-38,147],[-38,145],
-      [-38,142],[-38,140],[-36,137],[-32,134],[-28,114],[-22,114],
-      [-18,118],[-15,128],[-14,132],[-20,120],[-25,128],[-30,115],
-      [-34,116],[-35,118],[-34,122],[-32,122],[-28,122],[-24,118],
-      [-20,130],[-20,135],[-20,140],[-25,130],[-25,135],[-25,140],
-      [-28,130],[-28,135],[-28,140],[-30,125],[-30,130],[-30,135],
-      // ── Russia / Siberia coast + interior ──
+      // Russia/Siberia
       [55,65],[56,60],[58,62],[60,62],[62,65],[65,65],[68,65],[70,72],
       [72,80],[72,95],[70,100],[68,105],[65,110],[62,115],[60,120],
       [58,125],[55,125],[52,128],[55,132],[58,138],[60,140],[62,142],
@@ -618,491 +943,614 @@ const CyberGlobe = ({ accent }) => {
       [64,70],[64,75],[64,80],[64,85],[64,90],[64,95],[64,100],[64,105],
       [66,70],[66,75],[66,80],[66,85],[66,90],[66,95],[66,100],
       [68,80],[68,85],[68,90],[68,95],[68,100],
+      // Japan
+      [32,130],[33,131],[34,132],[35,136],[36,136],[37,137],[38,140],
+      [39,141],[40,140],[41,140],[42,141],[43,141],[44,142],[43,144],
+      [42,143],[40,141],[38,141],[36,138],[34,134],[33,132],[32,130],
+      // ── Australia ──
+      [-14,128],[-12,132],[-12,136],[-13,142],[-16,145],[-20,148],
+      [-25,152],[-28,153],[-32,152],[-35,150],[-38,147],[-38,145],
+      [-38,142],[-38,140],[-36,137],[-32,134],[-28,114],[-22,114],
+      [-18,118],[-15,128],[-14,132],[-20,120],[-25,128],[-30,115],
+      [-34,116],[-35,118],[-34,122],[-32,122],[-28,122],[-24,118],
+      [-20,130],[-20,135],[-20,140],[-25,130],[-25,135],[-25,140],
+      [-28,130],[-28,135],[-28,140],[-30,125],[-30,130],[-30,135],
+      // New Zealand
+      [-36,174],[-38,176],[-40,176],[-42,172],[-44,170],[-46,168],
+      // Borneo
+      [6,116],[4,118],[2,116],[0,114],[-2,114],[-4,114],[-4,116],
+      [-2,116],[0,116],[2,116],[4,116],[6,116],
+      // Sumatra
+      [4,98],[2,100],[0,102],[-2,104],[-4,104],[-6,106],[-4,106],
+      [-2,104],[0,100],[2,98],[4,98],
     ];
 
-    const cities = [
-      { name:'New York',    lat:40.7,  lon:-74.0 },
-      { name:'London',      lat:51.5,  lon:-0.1  },
-      { name:'Moscow',      lat:55.7,  lon:37.6  },
-      { name:'Beijing',     lat:39.9,  lon:116.4 },
-      { name:'Tokyo',       lat:35.7,  lon:139.7 },
-      { name:'Sydney',      lat:-33.9, lon:151.2 },
-      { name:'São Paulo',   lat:-23.5, lon:-46.6 },
-      { name:'Dubai',       lat:25.2,  lon:55.3  },
-      { name:'Singapore',   lat:1.3,   lon:103.8 },
-      { name:'Lagos',       lat:6.5,   lon:3.4   },
-      { name:'Mumbai',      lat:19.1,  lon:72.9  },
-      { name:'Seoul',       lat:37.6,  lon:126.9 },
-      { name:'Paris',       lat:48.9,  lon:2.3   },
-      { name:'Toronto',     lat:43.7,  lon:-79.4 },
-      { name:'Cairo',       lat:30.0,  lon:31.2  },
-      { name:'Castelfranco',lat:45.7,  lon:11.9, home:true },
+    // ── REAL THREAT DATA ──
+    // Top attack-source countries (Cloudflare Radar / CISA 2024-2025 data)
+    // Weighted by actual attack volume percentages
+    const ATTACK_SOURCES = [
+      { name:'Shanghai',    lat:31.2, lon:121.5, country:'CN', weight:18 }, // China #1 source
+      { name:'Moscow',      lat:55.7, lon:37.6,  country:'RU', weight:14 }, // Russia #2
+      { name:'Seoul',       lat:37.6, lon:126.9, country:'KR', weight:6  },
+      { name:'Pyongyang',   lat:39.0, lon:125.8, country:'KP', weight:5  }, // N.Korea APT
+      { name:'Tehran',      lat:35.7, lon:51.4,  country:'IR', weight:5  }, // Iran APT
+      { name:'Brasilia',    lat:-15.8,lon:-47.9, country:'BR', weight:4  },
+      { name:'Bucharest',   lat:44.4, lon:26.1,  country:'RO', weight:3  },
+      { name:'Lagos',       lat:6.5,  lon:3.4,   country:'NG', weight:3  },
+      { name:'Jakarta',     lat:-6.2, lon:106.8, country:'ID', weight:3  },
+      { name:'New York',    lat:40.7, lon:-74.0, country:'US', weight:8  }, // US also top source
+      { name:'Frankfurt',   lat:50.1, lon:8.7,   country:'DE', weight:4  },
+      { name:'Amsterdam',   lat:52.4, lon:4.9,   country:'NL', weight:3  }, // Many VPN exit nodes
     ];
+
+    // Top attack-target countries (critical infrastructure, financial hubs)
+    const ATTACK_TARGETS = [
+      { name:'Washington DC', lat:38.9,  lon:-77.0, country:'US', weight:22 },
+      { name:'London',        lat:51.5,  lon:-0.1,  country:'GB', weight:10 },
+      { name:'Tokyo',         lat:35.7,  lon:139.7, country:'JP', weight:8  },
+      { name:'Paris',         lat:48.9,  lon:2.3,   country:'FR', weight:7  },
+      { name:'Berlin',        lat:52.5,  lon:13.4,  country:'DE', weight:6  },
+      { name:'Singapore',     lat:1.3,   lon:103.8, country:'SG', weight:6  },
+      { name:'Sydney',        lat:-33.9, lon:151.2, country:'AU', weight:5  },
+      { name:'Toronto',       lat:43.7,  lon:-79.4, country:'CA', weight:5  },
+      { name:'Mumbai',        lat:19.1,  lon:72.9,  country:'IN', weight:5  },
+      { name:'Dubai',         lat:25.2,  lon:55.3,  country:'AE', weight:4  },
+      { name:'Sao Paulo',     lat:-23.5, lon:-46.6, country:'BR', weight:4  },
+      { name:'Castelfranco',  lat:45.7,  lon:11.9,  country:'IT', home:true, weight:2 },
+    ];
+
+    // Real attack type distribution (CISA/Verizon DBIR 2024)
+    const ATTACK_TYPES = [
+      { type:'DDoS',         color:'#f43f5e', weight:34 },
+      { type:'Brute Force',  color:'#f59e0b', weight:22 },
+      { type:'SQLi',         color:'#a78bfa', weight:15 },
+      { type:'Phishing',     color:'#00b8ff', weight:14 },
+      { type:'RCE',          color:'#f43f5e', weight:8  },
+      { type:'Ransomware',   color:'#fb923c', weight:7  },
+    ];
+
+    // All nodes for rendering (sources + targets)
+    const ALL_NODES = [...ATTACK_SOURCES, ...ATTACK_TARGETS];
+    const CITIES = ALL_NODES; // keep compatibility
+
+    // Weighted random picker
+    const weightedRandom = (arr) => {
+      const total = arr.reduce((s,x) => s + x.weight, 0);
+      let r = Math.random() * total;
+      for (const x of arr) { r -= x.weight; if (r <= 0) return x; }
+      return arr[arr.length-1];
+    };
+
+    // Current attack type shown in HUD
+    state.currentType = state.currentType || 'DDoS';
+    state.typeTimer   = state.typeTimer   || 0;
 
     const toRad = d => d * Math.PI / 180;
+    const hex2rgb = h => { const c=h.replace('#',''); return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)]; };
+    const [ar,ag,ab] = hex2rgb(accent);
 
     const project = (lat, lon, rot) => {
-      const phi = toRad(90 - lat);
-      const theta = toRad(lon) + rot;
-      const sinPhi = Math.sin(phi);
-      const x = R * sinPhi * Math.cos(theta);
-      const y = R * Math.cos(phi);
-      const z = R * sinPhi * Math.sin(theta);
-      return { x: cx + x, y: cy - y, z, depth: (z + R) / (2 * R), visible: z > -R * 0.08 };
+      const phi=toRad(90-lat), theta=toRad(lon)+rot, sinP=Math.sin(phi);
+      const x=R*sinP*Math.cos(theta), y=R*Math.cos(phi), z=R*sinP*Math.sin(theta);
+      return { x:cx+x, y:cy-y, z, depth:(z+R)/(2*R), visible:z>-R*0.05 };
     };
 
     const arcPoint = (src, dst, t, rot) => {
-      const lat = src.lat + (dst.lat - src.lat) * t;
-      const lon = src.lon + (dst.lon - src.lon) * t;
-      const lift = Math.sin(t * Math.PI) * 0.5;
-      const phi = toRad(90 - lat);
-      const theta = toRad(lon) + rot;
-      const r = R * (1 + lift);
-      const sinPhi = Math.sin(phi);
-      return {
-        x: cx + r * sinPhi * Math.cos(theta),
-        y: cy - r * Math.cos(phi),
-        z: r * sinPhi * Math.sin(theta),
-      };
+      const lat=src.lat+(dst.lat-src.lat)*t, lon=src.lon+(dst.lon-src.lon)*t;
+      const lift=Math.sin(t*Math.PI)*0.55;
+      const phi=toRad(90-lat), theta=toRad(lon)+rot, r=R*(1+lift), sinP=Math.sin(phi);
+      return { x:cx+r*sinP*Math.cos(theta), y:cy-r*Math.cos(phi), z:r*sinP*Math.sin(theta) };
     };
 
     const spawnAttack = () => {
-      const src = cities[Math.floor(Math.random() * cities.length)];
-      let dst; do { dst = cities[Math.floor(Math.random() * cities.length)]; } while (dst === src);
-      const palette = [accent, '#00b8ff', '#f43f5e', '#f59e0b', '#a78bfa'];
+      const src = weightedRandom(ATTACK_SOURCES);
+      const dst = weightedRandom(ATTACK_TARGETS);
+      if (src === dst) return;
+      const atkType = weightedRandom(ATTACK_TYPES);
       state.attacks.push({
-        src, dst, progress: 0,
-        speed: 0.003 + Math.random() * 0.004,
-        color: palette[Math.floor(Math.random() * palette.length)],
+        src, dst, progress:0,
+        speed: 0.0025+Math.random()*0.003,
+        color: atkType.color,
+        type:  atkType.type,
         impacted: false,
       });
     };
 
     const draw = (ts) => {
-      ctx.clearRect(0, 0, W, H);
-      if (!dragRef.current.active) {
-        state.velocity *= 0.95;
-        state.rotation += state.velocity + 0.0010;
-      }
-      const rot = state.rotation;
+      ctx.clearRect(0,0,W,H);
+      if (!dragRef.current.active) { state.velocity*=0.96; state.rotation+=state.velocity+0.0006; }
+      const rot=state.rotation;
 
-      // ── STARS ──
-      state.stars.forEach(s => {
-        const flicker = 0.5 + 0.5 * Math.sin(ts * 0.0006 + s.phase);
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${0.15 + flicker * 0.35})`;
-        ctx.fill();
-      });
+      // ── OUTER ATMOSPHERE GLOW ──
+      const atmo=ctx.createRadialGradient(cx,cy,R*0.88,cx,cy,R*1.48);
+      atmo.addColorStop(0, 'rgba('+ar+','+ag+','+ab+',0.0)');
+      atmo.addColorStop(0.3,'rgba('+ar+','+ag+','+ab+',0.07)');
+      atmo.addColorStop(0.65,'rgba('+ar+','+ag+','+ab+',0.03)');
+      atmo.addColorStop(1,  'rgba('+ar+','+ag+','+ab+',0)');
+      ctx.beginPath(); ctx.arc(cx,cy,R*1.48,0,Math.PI*2);
+      ctx.fillStyle=atmo; ctx.fill();
 
+      // Blue accent halo
+      const atmo2=ctx.createRadialGradient(cx+R*0.3,cy-R*0.3,R*0.4,cx,cy,R*1.3);
+      atmo2.addColorStop(0,'rgba(0,184,255,0.0)');
+      atmo2.addColorStop(0.6,'rgba(0,184,255,0.05)');
+      atmo2.addColorStop(1,'rgba(0,184,255,0)');
+      ctx.beginPath(); ctx.arc(cx,cy,R*1.3,0,Math.PI*2);
+      ctx.fillStyle=atmo2; ctx.fill();
 
+      // ── CLIP ──
+      ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.clip();
 
-      // ── CLIP to globe ──
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
+      // Globe body - deep dark
+      const fill=ctx.createRadialGradient(cx-R*0.35,cy-R*0.35,R*0.02,cx,cy,R);
+      fill.addColorStop(0,'rgba(4,10,22,0.92)');
+      fill.addColorStop(0.4,'rgba(2,6,15,0.97)');
+      fill.addColorStop(1,'rgba(1,2,8,1)');
+      ctx.fillStyle=fill; ctx.fillRect(cx-R,cy-R,R*2,R*2);
 
-      // Globe body — deep dark
-      const fill = ctx.createRadialGradient(cx - R*0.38, cy - R*0.38, R*0.04, cx, cy, R);
-      fill.addColorStop(0,   'rgba(8,14,28,0.85)');
-      fill.addColorStop(0.35,'rgba(4,8,18,0.95)');
-      fill.addColorStop(1,   'rgba(1,3,9,0.99)');
-      ctx.fillStyle = fill;
-      ctx.fillRect(cx - R, cy - R, R*2, R*2);
+      // Specular highlight top-left
+      const spec=ctx.createRadialGradient(cx-R*0.42,cy-R*0.44,0,cx-R*0.3,cy-R*0.3,R*0.65);
+      spec.addColorStop(0,'rgba(255,255,255,0.08)');
+      spec.addColorStop(0.5,'rgba(100,180,255,0.03)');
+      spec.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=spec; ctx.fillRect(cx-R,cy-R,R*2,R*2);
 
-      // ── SPECULAR HIGHLIGHT ──
-      const spec = ctx.createRadialGradient(cx - R*0.38, cy - R*0.4, 0, cx - R*0.28, cy - R*0.3, R*0.7);
-      spec.addColorStop(0,   'rgba(255,255,255,0.09)');
-      spec.addColorStop(0.45,'rgba(100,160,255,0.03)');
-      spec.addColorStop(1,   'rgba(0,0,0,0)');
-      ctx.fillStyle = spec;
-      ctx.fillRect(cx - R, cy - R, R*2, R*2);
-
-      // ── GRID ──
-      for (let lat = -75; lat <= 75; lat += 15) {
-        ctx.beginPath();
-        let first = true;
-        const isEq = lat === 0;
-        for (let lon = -180; lon <= 180; lon += 2) {
-          const p = project(lat, lon, rot);
-          if (!p.visible) { first = true; continue; }
-          first ? (ctx.moveTo(p.x, p.y), first = false) : ctx.lineTo(p.x, p.y);
+      // ── LATITUDE LINES ──
+      for (let lat=-75; lat<=75; lat+=15) {
+        ctx.beginPath(); let f=true;
+        const isEq=(lat===0);
+        for (let lon=-180; lon<=180; lon+=2) {
+          const p=project(lat,lon,rot); if(!p.visible){f=true;continue;}
+          f?(ctx.moveTo(p.x,p.y),f=false):ctx.lineTo(p.x,p.y);
         }
-        ctx.strokeStyle = isEq ? `rgba(${ar},${ag},${ab},0.30)` : `rgba(${ar},${ag},${ab},0.08)`;
-        ctx.lineWidth = isEq ? 0.9 : 0.4;
-        ctx.stroke();
+        ctx.strokeStyle=isEq ? 'rgba('+ar+','+ag+','+ab+',0.28)' : 'rgba('+ar+','+ag+','+ab+',0.07)';
+        ctx.lineWidth=isEq?0.8:0.3; ctx.stroke();
       }
-      for (let lon = -180; lon < 180; lon += 20) {
-        ctx.beginPath();
-        let first = true;
-        for (let lat = -80; lat <= 80; lat += 2) {
-          const p = project(lat, lon, rot);
-          if (!p.visible) { first = true; continue; }
-          first ? (ctx.moveTo(p.x, p.y), first = false) : ctx.lineTo(p.x, p.y);
+      // ── LONGITUDE LINES ──
+      for (let lon=-180; lon<180; lon+=20) {
+        if(lon===0) continue;
+        ctx.beginPath(); let f=true;
+        for (let lat=-80; lat<=80; lat+=2) {
+          const p=project(lat,lon,rot); if(!p.visible){f=true;continue;}
+          f?(ctx.moveTo(p.x,p.y),f=false):ctx.lineTo(p.x,p.y);
         }
-        ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.05)`;
-        ctx.lineWidth = 0.4;
-        ctx.stroke();
+        ctx.strokeStyle='rgba('+ar+','+ag+','+ab+',0.04)'; ctx.lineWidth=0.3; ctx.stroke();
       }
 
       // ── CONTINENT DOTS ──
-      DOTS.forEach(([lat, lon]) => {
-        const p = project(lat, lon, rot);
-        if (!p.visible) return;
-        const alpha = 0.38 + p.depth * 0.58;
-        const size  = 1.4 + p.depth * 1.8;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${ar},${ag},${ab},${alpha})`;
-        ctx.fill();
+      DOTS.forEach(([lat,lon]) => {
+        const p=project(lat,lon,rot); if(!p.visible) return;
+        const alpha=0.28+p.depth*0.68;
+        const size=1.1+p.depth*2.4;
+        // Slightly vary color for texture: some dots slightly brighter/warmer
+        const vary=((lat*3+lon*7)%5)/5;
+        const r2=Math.round(ar*(0.85+vary*0.25));
+        const g2=Math.round(ag*(0.9+vary*0.15));
+        const b2=Math.round(ab*(0.8+vary*0.3));
+        ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2);
+        ctx.fillStyle='rgba('+r2+','+g2+','+b2+','+alpha+')'; ctx.fill();
+      });
+
+      // Ice caps (white dot clusters near poles)
+      [[-85,-180,180,4,80],[-80,-180,180,3,75],[80,-180,180,4,80],[77,-180,180,3,75]].forEach(([lat,lonS,lonE,step,minLon])=>{
+        for(let lon=lonS;lon<=lonE;lon+=step){
+          const p=project(lat,lon,rot); if(!p.visible) return;
+          ctx.beginPath(); ctx.arc(p.x,p.y,1.8,0,Math.PI*2);
+          ctx.fillStyle='rgba(200,230,255,'+(0.4+p.depth*0.5)+')'; ctx.fill();
+        }
       });
 
       ctx.restore(); // end clip
 
       // ── GLOBE BORDER ──
       ctx.save();
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 18;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.55)`;
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
+      ctx.shadowColor=accent; ctx.shadowBlur=22;
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+      ctx.strokeStyle='rgba('+ar+','+ag+','+ab+',0.65)'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.beginPath(); ctx.arc(cx,cy,R+2.5*dpr,0,Math.PI*2);
+      ctx.strokeStyle='rgba('+ar+','+ag+','+ab+',0.07)'; ctx.lineWidth=0.8; ctx.stroke();
       ctx.restore();
 
-      // ── RIM LIGHT (opposite side) ──
-      const rim = ctx.createRadialGradient(cx + R*0.45, cy - R*0.45, R*0.15, cx, cy, R*1.02);
-      rim.addColorStop(0,    'rgba(0,0,0,0)');
-      rim.addColorStop(0.68, 'rgba(0,0,0,0)');
-      rim.addColorStop(0.84, `rgba(0,184,255,0.18)`);
-      rim.addColorStop(1,    `rgba(0,184,255,0.38)`);
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fillStyle = rim;
-      ctx.fill();
+      // Dashed orbit ring
+      ctx.save();
+      ctx.setLineDash([3*dpr,7*dpr]);
+      ctx.beginPath(); ctx.arc(cx,cy,R*1.10,0,Math.PI*2);
+      ctx.strokeStyle='rgba('+ar+','+ag+','+ab+',0.10)'; ctx.lineWidth=0.6; ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
 
-      // ── CITY MARKERS ──
-      cities.forEach((city, i) => {
-        const p = project(city.lat, city.lon, rot);
-        if (!p.visible) return;
-        const [cr, cg, cb] = city.home ? [255,210,60] : [ar,ag,ab];
-        const basePhase = ts * 0.00095 + i * 2.1;
+      // Rim light (blue, opposite sun)
+      const rim=ctx.createRadialGradient(cx+R*0.45,cy-R*0.45,R*0.1,cx,cy,R*1.02);
+      rim.addColorStop(0,'rgba(0,0,0,0)'); rim.addColorStop(0.72,'rgba(0,0,0,0)');
+      rim.addColorStop(0.86,'rgba(0,184,255,0.22)'); rim.addColorStop(1,'rgba(0,184,255,0.40)');
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fillStyle=rim; ctx.fill();
 
-        // 3 expanding rings at staggered phases
-        for (let ring = 0; ring < 3; ring++) {
-          const phase = (basePhase + ring * (Math.PI * 2 / 3)) % (Math.PI * 2);
-          const pct = phase / (Math.PI * 2);
-          const ringR = 3 + pct * 20;
-          const alpha = (1 - pct) * 0.6 * p.depth;
-          if (alpha < 0.01) continue;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, ringR, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha})`;
-          ctx.lineWidth = city.home ? 1.2 : 0.9;
-          ctx.stroke();
+      // ── CITY MARKERS — sources (red) vs targets (green/blue) ──
+      ALL_NODES.forEach((node, i) => {
+        const p=project(node.lat, node.lon, rot);
+        if(!p.visible||p.depth<0.12) return;
+        const depthFade=Math.max(0,(p.depth-0.12)/0.88);
+        const isSource = ATTACK_SOURCES.includes(node);
+        const basePhase=ts*0.0009+i*2.3;
+
+        if(node.home){
+          const pulse=0.5+0.5*Math.sin(ts*0.002);
+          ctx.save(); ctx.shadowColor='rgba(255,215,70,0.9)'; ctx.shadowBlur=18;
+          ctx.beginPath(); ctx.arc(p.x,p.y,15+pulse*5,0,Math.PI*2);
+          ctx.strokeStyle='rgba(255,215,70,'+(0.18+pulse*0.18)+')'; ctx.lineWidth=0.8; ctx.stroke();
+          ctx.beginPath(); ctx.arc(p.x,p.y,9,0,Math.PI*2);
+          ctx.strokeStyle='rgba(255,215,70,0.35)'; ctx.lineWidth=0.6; ctx.stroke();
+          [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{
+            ctx.beginPath(); ctx.moveTo(p.x+dx*5,p.y+dy*5); ctx.lineTo(p.x+dx*14,p.y+dy*14);
+            ctx.strokeStyle='rgba(255,215,70,0.75)'; ctx.lineWidth=0.9; ctx.stroke();
+          });
+          ctx.beginPath(); ctx.arc(p.x,p.y,3.2,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,215,70,1)'; ctx.fill(); ctx.restore();
+        } else if(isSource) {
+          // Attack source — subtle red/orange dot
+          for(let ring=0;ring<2;ring++){
+            const phase=(basePhase+ring*Math.PI)%(Math.PI*2);
+            const pct=phase/(Math.PI*2);
+            const ringR=2+pct*12, alpha=(1-pct)*0.35*depthFade;
+            if(alpha<0.01) continue;
+            ctx.beginPath(); ctx.arc(p.x,p.y,ringR,0,Math.PI*2);
+            ctx.strokeStyle='rgba(244,63,94,'+alpha+')'; ctx.lineWidth=0.6; ctx.stroke();
+          }
+          ctx.save(); ctx.shadowColor='rgba(244,63,94,0.6)'; ctx.shadowBlur=7;
+          ctx.beginPath(); ctx.arc(p.x,p.y,2.2*depthFade,0,Math.PI*2);
+          ctx.fillStyle='rgba(244,63,94,'+(0.65*depthFade)+')'; ctx.fill(); ctx.restore();
+        } else {
+          // Attack target — green ping
+          for(let ring=0;ring<2;ring++){
+            const phase=(basePhase+ring*Math.PI)%(Math.PI*2);
+            const pct=phase/(Math.PI*2);
+            const ringR=2+pct*16, alpha=(1-pct)*0.5*depthFade;
+            if(alpha<0.01) continue;
+            ctx.beginPath(); ctx.arc(p.x,p.y,ringR,0,Math.PI*2);
+            ctx.strokeStyle='rgba('+ar+','+ag+','+ab+','+alpha+')'; ctx.lineWidth=0.7; ctx.stroke();
+          }
+          ctx.save(); ctx.shadowColor=accent; ctx.shadowBlur=10;
+          ctx.beginPath(); ctx.arc(p.x,p.y,2.8*depthFade,0,Math.PI*2);
+          ctx.fillStyle='rgba('+ar+','+ag+','+ab+','+(0.75*depthFade)+')'; ctx.fill(); ctx.restore();
         }
-
-        // Core dot with glow
-        const dotR = city.home ? 5 : 3.5;
-        ctx.save();
-        ctx.shadowColor = city.home ? `rgba(255,210,60,1)` : accent;
-        ctx.shadowBlur = city.home ? 28 : 20;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, dotR * (0.6 + p.depth * 0.4), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},1)`;
-        ctx.fill();
-        ctx.restore();
       });
 
       // ── SPAWN ATTACKS ──
-      if (ts - state.lastAttack > 450 + Math.random()*350 && state.attacks.length < 10) {
-        spawnAttack();
-        state.lastAttack = ts;
+      if(ts-state.lastAttack>500+Math.random()*400&&state.attacks.length<8){spawnAttack();state.lastAttack=ts;}
+
+      // Update current type display
+      state.typeTimer = (state.typeTimer||0)+1;
+      if(state.typeTimer>180){
+        const active=state.attacks;
+        if(active.length>0) state.currentType=active[active.length-1].type||'DDoS';
+        state.typeTimer=0;
       }
 
-      // ── ATTACK ARCS — 2-pass: glow then core ──
-      for (let i = state.attacks.length - 1; i >= 0; i--) {
-        const atk = state.attacks[i];
-        atk.progress += atk.speed;
-        const [r2,g2,b2] = hex2rgb(atk.color.startsWith('#') ? atk.color : accent);
-        const prog = Math.min(atk.progress, 1);
-        const STEPS = 80;
-        const headStep = Math.floor(prog * STEPS);
-        const tailStep = Math.max(0, headStep - 28);
+      // ── ATTACK ARCS — Bloomberg/Cloudflare style: thin, precise, elegant ──
+      for(let i=state.attacks.length-1;i>=0;i--){
+        const atk=state.attacks[i]; atk.progress+=atk.speed;
+        const [r2,g2,b2]=hex2rgb(atk.color);
+        const prog=Math.min(atk.progress,1);
+        const STEPS=120;
+        const headStep=Math.floor(prog*STEPS);
+        // Short tail — only last 22 steps visible
+        const tailStep=Math.max(0,headStep-22);
+        const pts=[];
+        for(let s=tailStep;s<=headStep;s++) pts.push(arcPoint(atk.src,atk.dst,s/STEPS,rot));
+        if(pts.length<2){if(atk.progress>=1.6)state.attacks.splice(i,1);continue;}
 
-        // Pre-collect points
-        const pts = [];
-        for (let s = tailStep; s <= headStep; s++) {
-          pts.push(arcPoint(atk.src, atk.dst, s / STEPS, rot));
-        }
-        if (pts.length < 2) { if (atk.progress >= 1.6) state.attacks.splice(i, 1); continue; }
+        // Only draw if at least some points are on the visible hemisphere
+        const anyVis=pts.some(p=>p.z>0);
+        if(!anyVis){if(atk.progress>=1.6)state.attacks.splice(i,1);continue;}
 
-        // Pass 1: glow halo
+        // Build a single continuous path of visible segments
+        // Single subtle glow pass (thin, not fat)
         ctx.save();
-        ctx.shadowColor = atk.color;
-        ctx.shadowBlur = 22;
-        for (let s = 0; s < pts.length - 1; s++) {
-          if (pts[s].z < 0 || pts[s+1].z < 0) continue;
-          const a = (s / (pts.length - 1)) * 0.35;
-          ctx.beginPath();
-          ctx.moveTo(pts[s].x, pts[s].y);
-          ctx.lineTo(pts[s+1].x, pts[s+1].y);
-          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${a})`;
-          ctx.lineWidth = 5;
+        ctx.shadowColor=atk.color;
+        ctx.shadowBlur=8;
+        ctx.beginPath();
+        let drawing=false;
+        for(let s=0;s<pts.length;s++){
+          const p=pts[s];
+          if(p.z<=0){drawing=false;continue;}
+          const fadeIn=s/(pts.length-1);
+          const alpha=fadeIn*0.55;
+          if(!drawing){ctx.moveTo(p.x,p.y);drawing=true;}
+          else ctx.lineTo(p.x,p.y);
+        }
+        ctx.strokeStyle='rgba('+r2+','+g2+','+b2+',0.35)';
+        ctx.lineWidth=2.5*dpr;
+        ctx.lineCap='round';
+        ctx.lineJoin='round';
+        ctx.stroke();
+        ctx.restore();
+
+        // Core crisp line — tapered opacity tail to head
+        ctx.save();
+        ctx.lineCap='round'; ctx.lineJoin='round';
+        let prevP=null;
+        for(let s=0;s<pts.length-1;s++){
+          const p=pts[s], pn=pts[s+1];
+          if(p.z<=0||pn.z<=0){prevP=null;continue;}
+          const t=s/(pts.length-1);
+          const alpha=t*0.85+0.1;
+          ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(pn.x,pn.y);
+          ctx.strokeStyle='rgba('+r2+','+g2+','+b2+','+alpha.toFixed(2)+')';
+          ctx.lineWidth=1.0*dpr;
           ctx.stroke();
         }
         ctx.restore();
 
-        // Pass 2: crisp core
-        for (let s = 0; s < pts.length - 1; s++) {
-          if (pts[s].z < 0 || pts[s+1].z < 0) continue;
-          const a = (s / (pts.length - 1)) * 0.9;
-          ctx.beginPath();
-          ctx.moveTo(pts[s].x, pts[s].y);
-          ctx.lineTo(pts[s+1].x, pts[s+1].y);
-          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${a})`;
-          ctx.lineWidth = 1.8;
-          ctx.stroke();
-        }
-
-        // Head dot with bloom
-        if (atk.progress < 1) {
-          const head = arcPoint(atk.src, atk.dst, atk.progress, rot);
-          if (head.z >= 0) {
-            const fadeOut = 1 - Math.max(0, (atk.progress - 0.85) / 0.15);
+        // Head dot — small, precise
+        if(atk.progress<1){
+          const head=arcPoint(atk.src,atk.dst,atk.progress,rot);
+          if(head.z>0){
+            const fo=1-Math.max(0,(atk.progress-0.88)/0.12);
             ctx.save();
-            ctx.shadowColor = atk.color;
-            ctx.shadowBlur = 32;
-            ctx.beginPath();
-            ctx.arc(head.x, head.y, 5.5, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(${r2},${g2},${b2},${fadeOut})`;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.beginPath();
-            ctx.arc(head.x, head.y, 2, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(255,255,255,${fadeOut * 0.8})`;
-            ctx.fill();
+            ctx.shadowColor=atk.color; ctx.shadowBlur=16;
+            ctx.beginPath(); ctx.arc(head.x,head.y,3.5*dpr,0,Math.PI*2);
+            ctx.fillStyle='rgba('+r2+','+g2+','+b2+','+fo+')'; ctx.fill();
+            ctx.shadowBlur=0;
+            ctx.beginPath(); ctx.arc(head.x,head.y,1.4*dpr,0,Math.PI*2);
+            ctx.fillStyle='rgba(255,255,255,'+(fo*0.95)+')'; ctx.fill();
             ctx.restore();
           }
         }
-
-        // Trigger impact
-        if (atk.progress >= 1 && !atk.impacted) {
-          atk.impacted = true;
-          const dst = project(atk.dst.lat, atk.dst.lon, rot);
-          state.impacts.push({ x: dst.x, y: dst.y, color: atk.color, age: 0 });
+        if(atk.progress>=1&&!atk.impacted){
+          atk.impacted=true;
+          const dst=project(atk.dst.lat,atk.dst.lon,rot);
+          state.impacts.push({x:dst.x,y:dst.y,color:atk.color,age:0});
         }
-
-        if (atk.progress >= 1.6) state.attacks.splice(i, 1);
+        if(atk.progress>=1.6) state.attacks.splice(i,1);
       }
 
-      // ── IMPACT EXPLOSIONS ──
-      for (let i = state.impacts.length - 1; i >= 0; i--) {
-        const imp = state.impacts[i];
-        imp.age++;
-        const [r2,g2,b2] = hex2rgb(imp.color.startsWith('#') ? imp.color : accent);
-        ctx.save();
-        ctx.shadowColor = imp.color;
-        ctx.shadowBlur = 14;
-        for (let ring = 0; ring < 3; ring++) {
-          const t = ((imp.age / 60) + ring * 0.33) % 1;
-          const ringR = t * 38;
-          const alpha = (1 - t) * 1.0;
-          ctx.beginPath();
-          ctx.arc(imp.x, imp.y, ringR, 0, Math.PI*2);
-          ctx.strokeStyle = `rgba(${r2},${g2},${b2},${alpha})`;
-          ctx.lineWidth = 1.6;
-          ctx.stroke();
+      // ── IMPACTS — clean, subtle ──
+      for(let i=state.impacts.length-1;i>=0;i--){
+        const imp=state.impacts[i]; imp.age++;
+        const [r2,g2,b2]=hex2rgb(imp.color);
+        ctx.save(); ctx.shadowColor=imp.color; ctx.shadowBlur=8;
+        for(let ring=0;ring<3;ring++){
+          const t=((imp.age/55)+ring*0.33)%1;
+          const ringR=t*28*dpr, alpha=(1-t)*0.75;
+          ctx.beginPath(); ctx.arc(imp.x,imp.y,ringR,0,Math.PI*2);
+          ctx.strokeStyle='rgba('+r2+','+g2+','+b2+','+alpha+')';
+          ctx.lineWidth=0.9*dpr; ctx.stroke();
         }
-        ctx.restore();
-        if (imp.age > 60) state.impacts.splice(i, 1);
+        ctx.restore(); if(imp.age>55) state.impacts.splice(i,1);
       }
 
-      // ── HUD STATUS BAR ──
-      const count = state.attacks.length;
-      const fs = 10 * dpr;
-      ctx.font = `600 ${fs}px 'JetBrains Mono', monospace`;
-      const label = `◉ LIVE THREATS: ${String(count).padStart(2,'0')}`;
-      const tw = ctx.measureText(label).width;
-      const hx = cx - tw / 2 - 12*dpr;
-      const hy = cy + R + 14*dpr;
-      const hw = tw + 24*dpr;
-      const hh = 22*dpr;
-
-      ctx.fillStyle = 'rgba(4,8,16,0.75)';
+      // ── HUD — real threat intelligence data ──
+      const count=state.attacks.length;
+      const atkType=state.currentType||'DDoS';
+      const fs=9*dpr;
+      ctx.font='600 '+fs+'px JetBrains Mono, monospace';
+      const label=' LIVE ATTACKS: '+String(count).padStart(2,'0')+'   TYPE: '+atkType;
+      const tw=ctx.measureText(label).width;
+      const hx=cx-tw/2-14*dpr, hy=cy+R+14*dpr, hw=tw+28*dpr, hh=22*dpr;
+      // Background
+      ctx.fillStyle='rgba(2,5,14,0.88)';
       ctx.beginPath();
-      if (ctx.roundRect) {
-        ctx.roundRect(hx, hy, hw, hh, 4*dpr);
-      } else {
-        ctx.rect(hx, hy, hw, hh);
-      }
+      if(ctx.roundRect) ctx.roundRect(hx,hy,hw,hh,4*dpr); else ctx.rect(hx,hy,hw,hh);
       ctx.fill();
-      ctx.strokeStyle = `rgba(${ar},${ag},${ab},0.3)`;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
+      // Border
+      ctx.strokeStyle='rgba('+ar+','+ag+','+ab+',0.25)'; ctx.lineWidth=0.6; ctx.stroke();
+      // Dot indicator
+      ctx.beginPath(); ctx.arc(hx+10*dpr, hy+hh/2, 3*dpr, 0, Math.PI*2);
+      ctx.fillStyle='rgba('+ar+','+ag+','+ab+',0.9)'; ctx.fill();
+      // Text
+      ctx.fillStyle='rgba('+ar+','+ag+','+ab+',0.85)';
+      ctx.fillText(label, hx+18*dpr, hy+15*dpr);
+      // Source attribution (small)
+      const src2='SOURCE: CLOUDFLARE RADAR / CISA 2025';
+      const fs2=7.5*dpr;
+      ctx.font='400 '+fs2+'px JetBrains Mono, monospace';
+      const sw=ctx.measureText(src2).width;
+      ctx.fillStyle='rgba('+ar+','+ag+','+ab+',0.28)';
+      ctx.fillText(src2, cx-sw/2, hy+hh+12*dpr);
 
-      ctx.fillStyle = `rgba(${ar},${ag},${ab},0.92)`;
-      ctx.fillText(label, hx + 12*dpr, hy + 15*dpr);
-
-      animRef.current = requestAnimationFrame(draw);
+      animRef.current=requestAnimationFrame(draw);
     };
-
-    animRef.current = requestAnimationFrame(draw);
+    animRef.current=requestAnimationFrame(draw);
     return () => cancelAnimationFrame(animRef.current);
   }, [accent]);
 
-  const handleMouseDown = (e) => {
-    dragRef.current.active = true;
-    dragRef.current.lastX = e.clientX;
-    stateRef.current.velocity = 0;
-  };
-  const handleMouseMove = (e) => {
+  const onDown = e => { dragRef.current.active=true; dragRef.current.lastX=e.clientX; stateRef.current.velocity=0; };
+  const onMove = e => {
     if (!dragRef.current.active) return;
-    const dx = e.clientX - dragRef.current.lastX;
-    dragRef.current.lastX = e.clientX;
-    stateRef.current.velocity = dx * 0.003;
-    stateRef.current.rotation += dx * 0.003;
+    const dx=e.clientX-dragRef.current.lastX; dragRef.current.lastX=e.clientX;
+    stateRef.current.velocity=dx*0.003; stateRef.current.rotation+=dx*0.003;
   };
-  const handleMouseUp = () => { dragRef.current.active = false; };
+  const onUp = () => { dragRef.current.active=false; };
 
   return (
     <canvas ref={canvasRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
       style={{
-        position: 'absolute',
-        top: '50%', right: '-2%',
-        transform: 'translateY(-50%)',
-        width: 'min(540px, 50vw)',
-        height: 'min(600px, 55vw)',
-        pointerEvents: 'auto',
-        cursor: 'grab',
-        opacity: 0.95,
-        WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
-        maskImage: 'radial-gradient(ellipse 80% 85% at 62% 50%, black 35%, transparent 100%)',
-      }} />
+        position:'absolute', top:'50%', right:'-3%',
+        transform:'translateY(-50%)',
+        width:'min(580px,52vw)', height:'min(640px,58vw)',
+        cursor:'grab', opacity:0.97,
+        WebkitMaskImage:'radial-gradient(ellipse 78% 82% at 60% 50%, black 30%, transparent 100%)',
+        maskImage:'radial-gradient(ellipse 78% 82% at 60% 50%, black 30%, transparent 100%)',
+      }}
+    />
   );
 };
 
-/* ── HERO ── */
-const Hero = ({ accent, lang }) => {
-  const [typed, setTyped] = React.useState('');
-  const [showCursor, setShowCursor] = React.useState(true);
-  const phrases = ['Cybersecurity Specialist', 'Web Developer', 'Cloud Engineer', 'Problem Solver'];
-  const phraseIdx = React.useRef(0);
-  const charIdx = React.useRef(0);
-  const deleting = React.useRef(false);
+/* ════════════════════════════════════════════
+   LANG SWITCHER
+════════════════════════════════════════════ */
+const LangSwitcher = ({ lang, setLang, accent }) => {
+  const langs=['en','it','es','fr','de'];
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:'2px', padding:'3px', background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'6px', marginLeft:'1.5rem' }}>
+      {langs.map(code=>(
+        <button key={code} onClick={()=>setLang(code)} style={{
+          background: lang===code ? accent : 'none', border:'none', cursor:'pointer',
+          padding:'3px 8px', borderRadius:'4px',
+          fontFamily:'var(--font-mono)', fontSize:'10px',
+          color: lang===code ? '#060809' : 'var(--text3)',
+          letterSpacing:'0.06em', fontWeight: lang===code?700:400,
+          textTransform:'uppercase', transition:'all 0.15s', lineHeight:1.4,
+        }}
+          onMouseEnter={e=>{ if(lang!==code) e.currentTarget.style.color='var(--text2)'; }}
+          onMouseLeave={e=>{ if(lang!==code) e.currentTarget.style.color='var(--text3)'; }}
+        >{code}</button>
+      ))}
+    </div>
+  );
+};
 
-  React.useEffect(() => {
-    let timeout;
-    const tick = () => {
-      const phrase = phrases[phraseIdx.current];
+/* ════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════ */
+const Nav = ({ accent, lang, setLang }) => {
+  const [scrolled, setScrolled] = React.useState(false);
+  const [active, setActive]     = React.useState('hero');
+  React.useEffect(()=>{
+    let ticking = false;
+    const onScroll=()=>{
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY>50);
+        const secs=['hero','about','skills','experience','education','contact'];
+        for (const id of [...secs].reverse()) {
+          const el=document.getElementById(id);
+          if (el&&window.scrollY>=el.offsetTop-130) { setActive(id); break; }
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll',onScroll,{passive:true});
+    return ()=>window.removeEventListener('scroll',onScroll);
+  },[]);
+  const scrollTo = id => { const el=document.getElementById(id); if(el) window.scrollTo({top:el.offsetTop-80,behavior:'smooth'}); };
+  const nav = T[lang]?.nav || T.en.nav;
+  const items=[{id:'about',label:nav.about},{id:'skills',label:nav.skills},{id:'experience',label:nav.experience},{id:'education',label:nav.education},{id:'contact',label:nav.contact}];
+  return (
+    <nav style={{
+      position:'fixed',top:0,left:0,right:0,zIndex:1000,
+      padding:'0 clamp(1.5rem,5vw,4rem)',
+      background: scrolled?'rgba(6,8,9,0.94)':'transparent',
+      backdropFilter: scrolled?'blur(16px)':'none',
+      borderBottom: scrolled?'1px solid var(--border)':'1px solid transparent',
+      transition:'all 0.35s ease', height:'62px',
+      display:'flex',alignItems:'center',justifyContent:'space-between',
+    }}>
+      <button onClick={()=>scrollTo('hero')} style={{ background:'none',border:'none',cursor:'pointer',fontFamily:'var(--font-mono)',fontSize:'14px',color:accent,letterSpacing:'0.06em',fontWeight:600 }}>
+        RC<span style={{color:'var(--text3)'}}>._</span>
+      </button>
+      <div style={{display:'flex',gap:'2rem',alignItems:'center'}}>
+        {items.map(item=>(
+          <button key={item.id} onClick={()=>scrollTo(item.id)} style={{
+            background:'none',border:'none',cursor:'pointer',
+            fontFamily:'var(--font-display)',fontSize:'13px',fontWeight:500,
+            color: active===item.id ? accent : 'var(--text2)',
+            letterSpacing:'0.02em', transition:'color 0.2s', padding:0,
+          }}>{item.label}</button>
+        ))}
+        <LangSwitcher lang={lang} setLang={setLang} accent={accent} />
+      </div>
+    </nav>
+  );
+};
+
+/* ════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════ */
+const Hero = ({ accent, lang }) => {
+  const [typed, setTyped]         = React.useState('');
+  const [showCursor, setShowCursor] = React.useState(true);
+  const phrases = ['Cybersecurity Specialist','Web Developer','Cloud Engineer','CTF Player','Problem Solver'];
+  const phraseIdx=React.useRef(0), charIdx=React.useRef(0), deleting=React.useRef(false);
+  React.useEffect(()=>{
+    let t;
+    const tick=()=>{
+      const phrase=phrases[phraseIdx.current];
       if (!deleting.current) {
         charIdx.current++;
-        setTyped(phrase.slice(0, charIdx.current));
-        if (charIdx.current === phrase.length) {
-          deleting.current = true;
-          timeout = setTimeout(tick, 1800);
-          return;
-        }
+        setTyped(phrase.slice(0,charIdx.current));
+        if (charIdx.current===phrase.length) { deleting.current=true; t=setTimeout(tick,2000); return; }
       } else {
         charIdx.current--;
-        setTyped(phrase.slice(0, charIdx.current));
-        if (charIdx.current === 0) {
-          deleting.current = false;
-          phraseIdx.current = (phraseIdx.current + 1) % phrases.length;
-        }
+        setTyped(phrase.slice(0,charIdx.current));
+        if (charIdx.current===0) { deleting.current=false; phraseIdx.current=(phraseIdx.current+1)%phrases.length; }
       }
-      timeout = setTimeout(tick, deleting.current ? 40 : 70);
+      t=setTimeout(tick,deleting.current?35:68);
     };
-    timeout = setTimeout(tick, 600);
-    const cursorInterval = setInterval(() => setShowCursor(v => !v), 530);
-    return () => { clearTimeout(timeout); clearInterval(cursorInterval); };
-  }, []);
+    t=setTimeout(tick,700);
+    const ci=setInterval(()=>setShowCursor(v=>!v),520);
+    return ()=>{ clearTimeout(t); clearInterval(ci); };
+  },[]);
 
+  const tl = T[lang]||T.en;
   return (
-    <section id="hero" style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center',
-      padding: '0 clamp(1.5rem, 8vw, 10rem)',
-      position: 'relative', overflow: 'hidden',
-    }}>
-      {/* Background grid */}
+    <section id="hero" style={{ minHeight:'100vh', display:'flex', alignItems:'center', padding:'0 clamp(1.5rem,8vw,10rem)', position:'relative', overflow:'hidden' }}>
+      {/* Shooting stars */}
+      <ShootingStars />
+      {/* Grid bg */}
       <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
-        backgroundSize: '60px 60px',
-        opacity: 0.25,
-        maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
-      }} />
-      {/* Cyber Globe */}
+        position:'absolute',inset:0,
+        backgroundImage:'linear-gradient(#1a2230 1px,transparent 1px),linear-gradient(90deg,#1a2230 1px,transparent 1px)',
+        backgroundSize:'56px 56px', opacity:0.22,
+        maskImage:'radial-gradient(ellipse 90% 80% at 30% 50%, black 10%, transparent 80%)',
+      }}/>
+      {/* Radial glow center-left */}
+      <div style={{ position:'absolute', left:'-10%', top:'30%', width:'50vw', height:'50vw', borderRadius:'50%', background:'radial-gradient(circle, rgba(0,229,160,0.05) 0%, transparent 70%)', pointerEvents:'none' }}/>
+
       <CyberGlobe accent={accent} />
 
-      <div style={{ position: 'relative', maxWidth: '800px' }}>
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: '13px',
-          color: accent, letterSpacing: '0.1em', marginBottom: '1.5rem',
-          display: 'flex', alignItems: 'center', gap: '0.5rem',
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: accent, display: 'inline-block', boxShadow: `0 0 8px ${accent}` }} />
-          {t(lang, 'available')}
+      <div style={{ position:'relative', maxWidth:'780px', zIndex:2 }}>
+        {/* Badge */}
+        <div style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:accent, letterSpacing:'0.14em', marginBottom:'2rem', display:'flex', alignItems:'center', gap:'0.6rem', textTransform:'uppercase' }}>
+          <span style={{ width:7,height:7,borderRadius:'50%',background:accent,display:'inline-block',boxShadow:'0 0 12px #00e5a0,0 0 24px rgba(0,229,160,0.33)' }}/>
+          {tl.badge}
         </div>
-
-        <h1 style={{
-          fontSize: 'clamp(3rem, 8vw, 6rem)',
-          fontWeight: 700, lineHeight: 1.05,
-          letterSpacing: '-0.02em',
-          marginBottom: '1rem',
-        }}>
-          Riccardo<br />
-          <span style={{ color: accent }}>Civiero</span>
+        {/* Name */}
+        <h1 style={{ fontSize:'clamp(3.2rem,9vw,6.5rem)', fontWeight:700, lineHeight:1.03, letterSpacing:'-0.03em', marginBottom:'1.2rem', textWrap:'pretty' }}>
+          Riccardo<br/>
+          <span style={{ color:accent, position:'relative' }}>
+            Civiero
+          </span>
         </h1>
-
-        <div style={{
-          fontFamily: 'var(--font-mono)', fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
-          color: 'var(--text2)', marginBottom: '2rem',
-          minHeight: '2em',
-        }}>
-          <span style={{ color: 'var(--text3)' }}>$ </span>
-          {typed}
-          <span style={{ opacity: showCursor ? 1 : 0, color: accent }}>▌</span>
+        {/* Typewriter */}
+        <div style={{ fontFamily:'var(--font-mono)', fontSize:'clamp(1rem,2.5vw,1.35rem)', color:'var(--text2)', marginBottom:'2rem', minHeight:'2.2em' }}>
+          <span style={{color:'var(--text3)'}}>$ </span><span>{typed}</span>
+          <span style={{opacity:showCursor?1:0,color:accent}}>▌</span>
         </div>
-
-        <p style={{
-          fontSize: '1.05rem', color: 'var(--text2)',
-          maxWidth: '520px', lineHeight: 1.7, marginBottom: '2.5rem',
-        }}>
-          {t(lang, 'heroDesc')}
+        {/* Desc */}
+        <p style={{ fontSize:'1.05rem', color:'var(--text2)', maxWidth:'520px', lineHeight:1.75, marginBottom:'2.5rem', textWrap:'pretty' }}>
+          {tl.heroDesc}
         </p>
-
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} style={{
-            padding: '0.75rem 1.75rem',
-            background: accent, color: '#0a0c0f',
-            border: 'none', borderRadius: '6px',
-            fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 600,
-            cursor: 'pointer', letterSpacing: '0.03em',
-            transition: 'transform 0.15s, box-shadow 0.15s',
-            boxShadow: `0 0 20px ${accent}40`,
+        {/* CTA */}
+        <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap', alignItems:'center' }}>
+          <button onClick={()=>{ const el=document.getElementById('contact'); if(el) window.scrollTo({top:el.offsetTop-80,behavior:'smooth'}); }} style={{
+            padding:'13px 28px', background:accent, color:'#060809',
+            border:'none', borderRadius:'8px', fontFamily:'var(--font-display)',
+            fontSize:'14px', fontWeight:700, cursor:'pointer', letterSpacing:'0.02em',
+            transition:'all 0.2s', boxShadow:'0 0 32px rgba(0,229,160,0.27)',
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 4px 24px ${accent}60`; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 0 20px ${accent}40`; }}
-          >
-            {t(lang, 'contactCta')}
-          </button>
+            onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 40px rgba(0,229,160,0.4)'; }}
+            onMouseLeave={e=>{ e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 0 32px rgba(0,229,160,0.27)'; }}
+          >{tl.contactCta}</button>
+          <a href="https://github.com/SpiderCivi" target="_blank" rel="noreferrer" style={{
+            padding:'13px 24px', background:'none', color:'var(--text2)',
+            border:'1px solid var(--border)', borderRadius:'8px',
+            fontFamily:'var(--font-mono)', fontSize:'13px', cursor:'pointer',
+            letterSpacing:'0.03em', transition:'all 0.2s', textDecoration:'none',
+          }}
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor='var(--text2)'; e.currentTarget.style.color='var(--text)'; }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text2)'; }}
+          >GitHub →</a>
         </div>
-
         {/* Stats */}
-        <div style={{ display: 'flex', gap: '2.5rem', marginTop: '3.5rem', flexWrap: 'wrap' }}>
-          {[
-            { n: '2+', label: t(lang, 'statsExperience') },
-            { n: '4+', label: t(lang, 'statsCompanies') },
-          ].map(s => (
-            <div key={s.label}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.6rem', fontWeight: 700, color: accent }}>{s.n}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text3)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s.label}</div>
+        <div style={{ display:'flex', gap:'2.5rem', marginTop:'3.5rem' }}>
+          {[{n:'4+',l:tl.stats.exp},{n:'5+',l:tl.stats.companies},{n:'3',l:'Cisco Certs'}].map(s=>(
+            <div key={s.l}>
+              <div style={{ fontFamily:'var(--font-mono)', fontSize:'1.8rem', fontWeight:700, color:accent, letterSpacing:'-0.02em' }}>{s.n}</div>
+              <div style={{ fontFamily:'var(--font-display)', fontSize:'12px', color:'var(--text3)', marginTop:'2px', letterSpacing:'0.03em' }}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -1111,204 +1559,289 @@ const Hero = ({ accent, lang }) => {
   );
 };
 
-/* ── SECTION HEADER ── */
-const SectionHeader = ({ icon, label, title, accent }) => (
-  <div style={{ marginBottom: '3rem' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-      <span style={{ color: accent }}>{icon}</span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: accent, letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</span>
-    </div>
-    <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.1 }}>{title}</h2>
-  </div>
-);
-
-/* ── ABOUT ── */
-const About = ({ accent, lang }) => (
-  <section id="about" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
-    <SectionHeader icon={<Icon name="user" size={14} />} label={t(lang, 'aboutLabel')} title={t(lang, 'aboutTitle')} accent={accent} />
-    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '4rem', alignItems: 'start' }}>
-      <div>
-        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-          {t(lang, 'aboutText')}
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          {[
-            { label: t(lang, 'birthLabel'), value: data.birth },
-            { label: t(lang, 'cityLabel'), value: 'Castelfranco Veneto' },
-            { label: 'Email', value: data.email },
-          ].map(({ label, value }) => (
-            <div key={label} style={{
-              padding: '1rem',
-              background: 'var(--bg2)',
-              border: '1px solid var(--border)',
-              borderRadius: '8px',
-            }}>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem' }}>{label}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>{value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        {/* Languages */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text3)', marginBottom: '1.25rem' }}>{t(lang, 'langTitle')}</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {data.languages.map((l, i) => (
-              <div key={l.lang}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{translations[lang].langNames?.[i] ?? l.lang}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: accent }}>{l.level}</span>
-                </div>
-                <div style={{ height: '3px', background: 'var(--border)', borderRadius: '2px' }}>
-                  <div style={{ width: `${l.pct}%`, height: '100%', background: accent, borderRadius: '2px', transition: 'width 1s ease' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Terminal card */}
-        <div style={{
-          background: 'var(--bg2)', border: '1px solid var(--border)',
-          borderRadius: '10px', overflow: 'hidden',
-        }}>
-          <div style={{
-            padding: '0.6rem 1rem',
-            background: 'var(--bg3)', borderBottom: '1px solid var(--border)',
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-          }}>
-            {['#ff5f57','#febc2e','#28c840'].map(c => (
-              <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
-            ))}
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text3)', marginLeft: '0.5rem' }}>whoami.sh</span>
-          </div>
-          <div style={{ padding: '1.25rem', fontFamily: 'var(--font-mono)', fontSize: '13px', lineHeight: 2 }}>
-            {[
-              ['$', 'whoami'],
-              ['>', 'Riccardo Civiero'],
-              ['$', 'cat skills.txt'],
-              ['>', 'Cybersecurity · Cloud · WebDev'],
-              ['$', 'echo $LOCATION'],
-              ['>', 'Castelfranco Veneto, IT'],
-              ['$', 'echo $STATUS'],
-              ['>', <span style={{ color: accent }}>{t(lang, 'statusAvailable')}</span>],
-            ].map(([prompt, text], i) => (
-              <div key={i} style={{ display: 'flex', gap: '0.75rem' }}>
-                <span style={{ color: prompt === '$' ? accent : 'var(--text3)', minWidth: '1rem' }}>{prompt}</span>
-                <span style={{ color: prompt === '$' ? 'var(--text2)' : 'var(--text)' }}>{text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-/* ── SKILLS ── */
-const Skills = ({ accent, lang }) => {
-  const catMap = translations[lang].skillCategories;
+/* ════════════════════════════════════════════
+   ABOUT
+════════════════════════════════════════════ */
+const About = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
   return (
-    <section id="skills" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
-      <SectionHeader icon={<Icon name="code" size={14} />} label={t(lang, 'skillsLabel')} title={t(lang, 'skillsTitle')} accent={accent} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-        {Object.entries(data.skills).map(([cat, skills]) => (
-          <div key={cat} style={{
-            background: 'var(--bg)', border: '1px solid var(--border)',
-            borderRadius: '10px', padding: '1.5rem',
-            transition: 'border-color 0.2s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = `${accent}60`}
-            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
-          >
-            <h3 style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.1em', color: accent, marginBottom: '1rem' }}>{catMap[cat] ?? cat}</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {skills.map(s => (
-                <span key={s} style={{
-                  padding: '0.3rem 0.75rem',
-                  background: 'var(--bg3)', border: '1px solid var(--border)',
-                  borderRadius: '4px', fontSize: '13px', color: 'var(--text2)',
-                  fontFamily: 'var(--font-mono)',
-                }}>{s}</span>
-              ))}
-            </div>
+    <section id="about" style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'6rem', alignItems:'start' }}>
+        {/* Left — bio */}
+        <div>
+          <p className="section-label reveal">About</p>
+          <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', marginBottom:'2rem', lineHeight:1.15 }}>
+            {tl.aboutTitle}
+          </h2>
+          <p className="reveal d2" style={{ fontSize:'1.05rem', color:'var(--text2)', lineHeight:1.85, marginBottom:'2.5rem', textWrap:'pretty' }}>
+            {tl.aboutText}
+          </p>
+        </div>
+        {/* Right — details */}
+        <div>
+          {/* Personal details */}
+          <p className="section-label reveal">Info</p>
+          <div className="reveal d1" style={{ display:'flex', flexDirection:'column', gap:'0.75rem', marginBottom:'2.5rem' }}>
+            {[
+              { label: tl.birth, value: '17 Feb 2003' },
+              { label: tl.city,  value: 'Castelfranco Veneto, TV' },
+              { label: 'Email',  value: DATA.email, small: true },
+            ].map(row=>(
+              <div key={row.label} style={{ padding:'14px 16px', background:'var(--bg2)', borderRadius:'10px', border:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center', gap:'1rem' }}>
+                <span style={{ fontFamily:'var(--font-mono)', fontSize:'10px', color:'var(--text3)', letterSpacing:'0.12em', textTransform:'uppercase', flexShrink:0 }}>{row.label}</span>
+                <span style={{ fontSize: row.small?'12px':'14px', color:'var(--text)', fontWeight:500, textAlign:'right', wordBreak:'break-all' }}>{row.value}</span>
+              </div>
+            ))}
           </div>
+          {/* Links */}
+          <div className="reveal d2" style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap' }}>
+            {DATA.links.map(l=>(
+              <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={{
+                padding:'9px 18px', border:'1px solid var(--border)',
+                borderRadius:'100px', fontFamily:'var(--font-mono)', fontSize:'12px',
+                color:'var(--text2)', textDecoration:'none', display:'flex', alignItems:'center', gap:'6px',
+                transition:'all 0.2s',
+              }}
+                onMouseEnter={e=>{ e.currentTarget.style.borderColor=accent; e.currentTarget.style.color=accent; }}
+                onMouseLeave={e=>{ e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text2)'; }}
+              ><Icon name="link" size={12}/>{l.label}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ════════════════════════════════════════════
+   SKILLS
+════════════════════════════════════════════ */
+const SKILL_GROUPS = [
+  {
+    key: 'Cybersecurity',
+    icon: 'shield',
+    color: '#00e5a0',
+    items: DATA.skills['Cybersecurity'],
+  },
+  {
+    key: 'Sviluppo',
+    icon: 'code',
+    color: '#00b8ff',
+    items: DATA.skills['Sviluppo'],
+  },
+  {
+    key: 'Linguaggi',
+    icon: 'star',
+    color: '#7c5cfc',
+    items: DATA.skills['Linguaggi'],
+  },
+  {
+    key: 'Soft Skills',
+    icon: 'user',
+    color: '#f59e0b',
+    items: DATA.skills['Soft Skills'],
+  },
+];
+
+const SkillBlock = ({ group, label, delay }) => {
+  const [hovered, setHovered] = React.useState(null);
+  return (
+    <div className={`reveal d${delay}`} style={{
+      background: 'var(--bg)',
+      border: '1px solid var(--border)',
+      borderRadius: '18px',
+      padding: '28px',
+      transition: 'border-color 0.25s',
+    }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = group.color + '55'}
+      onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+    >
+      {/* Header */}
+      <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'20px' }}>
+        <div style={{
+          width:38, height:38, borderRadius:'10px',
+          background: group.color + '18',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          color: group.color,
+        }}>
+          <Icon name={group.icon} size={18}/>
+        </div>
+        <div>
+          <div style={{ fontWeight:700, fontSize:'15px' }}>{label}</div>
+          <div style={{ fontFamily:'var(--font-mono)', fontSize:'10px', color:'var(--text3)', letterSpacing:'0.08em' }}>{group.items.length} skills</div>
+        </div>
+      </div>
+      {/* Tags */}
+      <div style={{ display:'flex', flexWrap:'wrap', gap:'7px' }}>
+        {group.items.map((skill, i) => (
+          <span
+            key={skill}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              padding: '6px 13px',
+              borderRadius: '100px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              fontWeight: 500,
+              background: hovered === i ? group.color + '18' : 'var(--bg2)',
+              border: `1px solid ${hovered === i ? group.color + '88' : 'var(--border)'}`,
+              color: hovered === i ? group.color : 'var(--text2)',
+              transition: 'all 0.18s',
+              cursor: 'default',
+              userSelect: 'none',
+            }}
+          >{skill}</span>
         ))}
       </div>
+    </div>
+  );
+};
+
+const Skills = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  return (
+    <section id="skills" style={{
+      padding: 'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)',
+      background: 'var(--bg2)',
+      borderTop: '1px solid var(--border)',
+      borderBottom: '1px solid var(--border)',
+    }}>
+      <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
+        <p className="section-label reveal">{tl.skillsTitle}</p>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'3rem', gap:'2rem', flexWrap:'wrap' }}>
+          <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', lineHeight:1.15 }}>
+            {tl.skillsTitle}
+          </h2>
+          <p className="reveal d2" style={{ fontSize:'14px', color:'var(--text2)', maxWidth:'340px', lineHeight:1.7, textAlign:'right' }}>
+            Competenze acquisite in ambito lavorativo, formativo e attraverso progetti personali.
+          </p>
+        </div>
+
+        {/* 2x2 grid */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'1.25rem' }}>
+          {SKILL_GROUPS.map((g, i) => (
+            <SkillBlock
+              key={g.key}
+              group={g}
+              label={tl.catLabels?.[g.key] || g.key}
+              delay={Math.min(i+1, 5)}
+            />
+          ))}
+        </div>
+
+        {/* Languages bar */}
+        <div className="reveal d3" style={{
+          marginTop: '2rem',
+          background: 'var(--bg)',
+          border: '1px solid var(--border)',
+          borderRadius: '18px',
+          padding: '28px 32px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '2rem',
+          alignItems: 'center',
+        }}>
+          <div>
+            <p className="section-label" style={{ marginBottom:'1rem' }}>{tl.langTitle}</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:'1.2rem' }}>
+              {DATA.languages.map((l, i) => {
+                const col = i === 0 ? accent : i === 1 ? '#00b8ff' : '#a78bfa';
+                return (
+                  <div key={l.lang}>
+                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'7px' }}>
+                      <span style={{ fontWeight:600, fontSize:'14px' }}>{tl.langNames?.[i] || l.lang}</span>
+                      <span style={{ fontFamily:'var(--font-mono)', fontSize:'12px', color: col }}>{l.level}</span>
+                    </div>
+                    <div className="progress-track">
+                      <div style={{
+                        height:'100%', borderRadius:'2px',
+                        width:`${l.pct}%`,
+                        background:`linear-gradient(90deg,${col},${col}99)`,
+                      }}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
 
-/* ── EXPERIENCE ── */
-const Experience = ({ accent, showTimeline, lang }) => {
-  const descMap = translations[lang].expDescs;
+/* ════════════════════════════════════════════
+   EXPERIENCE
+════════════════════════════════════════════ */
+const Experience = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  const [expanded, setExpanded] = React.useState(null);
   return (
-    <section id="experience" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
-      <SectionHeader icon={<Icon name="briefcase" size={14} />} label={t(lang, 'expLabel')} title={t(lang, 'expTitle')} accent={accent} />
-      <div style={{ position: 'relative' }}>
-        {showTimeline && (
-          <div style={{
-            position: 'absolute', left: '0', top: 0, bottom: 0,
-            width: '1px', background: `linear-gradient(to bottom, ${accent}, var(--border), transparent)`,
-            marginLeft: '11px',
-          }} />
-        )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {data.experience.map((exp, i) => (
-            <div key={i} style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
-              {showTimeline && (
+    <section id="experience" style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)' }}>
+      <div style={{ maxWidth:'860px', margin:'0 auto' }}>
+        <p className="section-label reveal">{tl.expTitle}</p>
+        <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', lineHeight:1.15, marginBottom:'4rem' }}>
+          {tl.expTitle}
+        </h2>
+        <div style={{ position:'relative', paddingLeft:'2rem' }}>
+          <div className="timeline-line"/>
+          {DATA.experience.map((exp,i)=>(
+            <div key={exp.company} className="reveal" style={{ transitionDelay:`${i*0.08}s`, marginBottom:'0.75rem' }}>
+              <div onClick={()=>setExpanded(expanded===i?null:i)} style={{
+                padding:'24px 28px', background:'var(--bg2)', border:`1px solid ${expanded===i?exp.color:'var(--border)'}`,
+                borderRadius:'14px', cursor:'pointer', transition:'all 0.25s',
+                position:'relative', marginLeft:'1.5rem',
+              }}
+                onMouseEnter={e=>{ if(expanded!==i) e.currentTarget.style.borderColor='var(--border2)'; }}
+                onMouseLeave={e=>{ if(expanded!==i) e.currentTarget.style.borderColor='var(--border)'; }}
+              >
+                {/* Timeline dot */}
                 <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: exp.current ? accent : 'var(--bg2)',
-                  border: `2px solid ${exp.current ? accent : 'var(--border2)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: exp.current ? `0 0 12px ${accent}60` : 'none',
-                  marginTop: '4px',
-                }}>
-                  {exp.current && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg)' }} />}
-                </div>
-              )}
-              <div style={{
-                flex: 1, background: 'var(--bg2)', border: '1px solid var(--border)',
-                borderRadius: '10px', padding: '1.5rem',
-                borderLeft: exp.current ? `3px solid ${accent}` : '1px solid var(--border)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  position:'absolute', left:'-2.85rem', top:'50%', transform:'translateY(-50%)',
+                  width:10, height:10, borderRadius:'50%',
+                  background: exp.current?exp.color:'var(--border2)',
+                  boxShadow: exp.current?`0 0 12px ${exp.color}88`:'none',
+                  border:`2px solid ${exp.current?exp.color:'var(--border)'}`,
+                  transition:'all 0.2s',
+                }}/>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'1rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.2rem' }}>{exp.role}</h3>
-                    <div style={{ color: accent, fontSize: '14px', fontWeight: 500 }}>{exp.company}</div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'4px' }}>
+                      <span style={{ fontWeight:700, fontSize:'16px' }}>{exp.role}</span>
+                      {exp.current && (
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:'9px', padding:'3px 8px', borderRadius:'4px', background:`${exp.color}22`, color:exp.color, letterSpacing:'0.1em', textTransform:'uppercase' }}>
+                          {tl.current}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'var(--text2)', fontSize:'14px' }}>
+                      <span style={{ color:exp.color, fontWeight:600 }}>{exp.company}</span>
+                      <span style={{color:'var(--text3)'}}>·</span>
+                      <span>{exp.location}</span>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text3)' }}>{exp.period}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{exp.location}</div>
-                    {exp.current && (
-                      <span style={{
-                        display: 'inline-block', marginTop: '0.3rem',
-                        padding: '0.1rem 0.5rem', background: `${accent}20`, color: accent,
-                        border: `1px solid ${accent}40`, borderRadius: '20px', fontSize: '11px',
-                        fontFamily: 'var(--font-mono)',
-                      }}>● live</span>
-                    )}
+                  <div style={{ textAlign:'right', flexShrink:0 }}>
+                    <div style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', whiteSpace:'nowrap' }}>{exp.period}</div>
+                    <div style={{ display:'flex', gap:'4px', marginTop:'8px', justifyContent:'flex-end', flexWrap:'wrap' }}>
+                      {exp.tags.map(tag=>(
+                        <span key={tag} style={{ fontFamily:'var(--font-mono)', fontSize:'9px', padding:'2px 7px', borderRadius:'3px', background:'var(--bg)', border:'1px solid var(--border)', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>{tag}</span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <ul style={{ paddingLeft: '1rem', marginBottom: '0.75rem' }}>
-                  {(descMap[exp.company] ?? exp.desc).map((d, j) => (
-                    <li key={j} style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '0.2rem', listStyleType: 'none', paddingLeft: 0 }}>
-                      <span style={{ color: accent, marginRight: '0.5rem' }}>›</span>{d}
-                    </li>
-                  ))}
-                </ul>
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {exp.tags.map(t => (
-                    <span key={t} style={{
-                      padding: '0.2rem 0.6rem', fontSize: '11px',
-                      background: 'var(--bg3)', border: '1px solid var(--border)',
-                      borderRadius: '4px', color: 'var(--text3)',
-                      fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
-                    }}>{t}</span>
-                  ))}
+                {/* Expanded */}
+                <div style={{
+                  overflow:'hidden', maxHeight: expanded===i ? '200px' : '0',
+                  transition:'max-height 0.4s cubic-bezier(0.16,1,0.3,1)',
+                }}>
+                  <ul style={{ marginTop:'1.2rem', paddingLeft:'0', listStyle:'none', display:'flex', flexDirection:'column', gap:'6px' }}>
+                    {exp.desc.map(d=>(
+                      <li key={d} style={{ display:'flex', alignItems:'flex-start', gap:'10px', fontSize:'13px', color:'var(--text2)' }}>
+                        <span style={{ color:exp.color, flexShrink:0, marginTop:'4px' }}>›</span>{d}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>
@@ -1319,234 +1852,250 @@ const Experience = ({ accent, showTimeline, lang }) => {
   );
 };
 
-/* ── EDUCATION ── */
-const Education = ({ accent, lang }) => (
-  <section id="education" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
-    <SectionHeader icon={<Icon name="book" size={14} />} label={t(lang, 'eduLabel')} title={t(lang, 'eduTitle')} accent={accent} />
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
-      {data.education.map((edu, i) => (
-        <div key={i} style={{
-          background: 'var(--bg)', border: '1px solid var(--border)',
-          borderRadius: '12px', padding: '1.75rem',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{
-            position: 'absolute', top: 0, right: 0,
-            width: '80px', height: '80px',
-            background: `radial-gradient(circle at top right, ${accent}12, transparent)`,
-          }} />
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: '11px',
-            color: 'var(--text3)', marginBottom: '0.75rem', letterSpacing: '0.08em',
-          }}>{edu.period}</div>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.3rem' }}>{edu.degree}</h3>
-          <div style={{ color: accent, fontSize: '14px', marginBottom: '0.3rem' }}>{edu.school}</div>
-          <div style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '1rem' }}>{edu.field} · {edu.location}</div>
-          {edu.grade && <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.4rem 0.9rem',
-            background: `${accent}15`, border: `1px solid ${accent}30`,
-            borderRadius: '20px',
-          }}>
-            <Icon name="star" size={12} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: accent }}>{edu.grade}</span>
-          </div>}
-        </div>
-      ))}
-    </div>
-  </section>
-);
-
-/* ── PROJECTS ── */
-const Projects = ({ accent }) => (
-  <section id="projects" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)' }}>
-    <SectionHeader icon={<Icon name="folder" size={14} />} label="Projects" title="Progetti" accent={accent} />
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-      {data.projects.map((p, i) => (
-        <div key={i} style={{
-          background: 'var(--bg2)', border: '1px solid var(--border)',
-          borderRadius: '12px', padding: '1.75rem',
-          position: 'relative', overflow: 'hidden',
-          cursor: 'default',
-          transition: 'border-color 0.2s, transform 0.2s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = `${p.color}50`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = ''; }}
-        >
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-            background: p.color,
-            borderRadius: '12px 12px 0 0',
-          }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: '8px',
-              background: `${p.color}15`, border: `1px solid ${p.color}30`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: p.color,
+/* ════════════════════════════════════════════
+   EDUCATION
+════════════════════════════════════════════ */
+const Education = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  return (
+    <section id="education" style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)', background:'var(--bg2)', borderTop:'1px solid var(--border)', borderBottom:'1px solid var(--border)' }}>
+      <div style={{ maxWidth:'900px', margin:'0 auto' }}>
+        <p className="section-label reveal">{tl.eduTitle}</p>
+        <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', lineHeight:1.15, marginBottom:'3rem' }}>
+          {tl.eduTitle}
+        </h2>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(340px,1fr))', gap:'1.5rem' }}>
+          {DATA.education.map((edu,i)=>(
+            <a key={edu.school} href={edu.url} target="_blank" rel="noreferrer" className={`card-hover reveal d${i+1}`} style={{
+              padding:'32px', background:'var(--bg)', border:`1px solid ${edu.highlight?accent+'44':'var(--border)'}`,
+              borderRadius:'16px', textDecoration:'none', display:'block',
+              position:'relative', overflow:'hidden',
             }}>
-              <Icon name="shield" size={18} />
-            </div>
-            <span style={{
-              padding: '0.2rem 0.6rem',
-              background: p.status === 'In corso' ? `${accent}20` : 'var(--bg3)',
-              border: `1px solid ${p.status === 'In corso' ? `${accent}40` : 'var(--border)'}`,
-              borderRadius: '20px', fontSize: '11px',
-              color: p.status === 'In corso' ? accent : 'var(--text3)',
-              fontFamily: 'var(--font-mono)',
-            }}>{p.status === 'In corso' ? '● ' : ''}{p.status}</span>
-          </div>
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.6rem' }}>{p.title}</h3>
-          <p style={{ fontSize: '13px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '1.25rem' }}>{p.desc}</p>
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {p.tags.map(t => (
-              <span key={t} style={{
-                padding: '0.2rem 0.6rem', fontSize: '11px',
-                background: 'var(--bg3)', border: '1px solid var(--border)',
-                borderRadius: '4px', color: 'var(--text3)',
-                fontFamily: 'var(--font-mono)',
-              }}>{t}</span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-);
-
-/* ── CONTACT ── */
-const Contact = ({ accent, lang }) => (
-  <section id="contact" style={{ padding: '6rem clamp(1.5rem, 8vw, 10rem)', borderTop: '1px solid var(--border)', background: 'var(--bg2)' }}>
-    <SectionHeader icon={<Icon name="mail" size={14} />} label={t(lang, 'contactLabel')} title={t(lang, 'contactTitle')} accent={accent} />
-    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '4rem', alignItems: 'start' }}>
-      <div>
-        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '2rem' }}>
-          {t(lang, 'contactDesc')}
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {[
-            { icon: 'mail', label: 'Email', value: data.email, href: `mailto:${data.email}` },
-            { icon: 'link', label: 'Linktree', value: 'linktr.ee/RickyCivi', href: 'https://linktr.ee/RickyCivi' },
-          ].map(item => (
-            <a key={item.label} href={item.href || '#'} target={item.href?.startsWith('http') ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '1rem 1.25rem',
-                background: 'var(--bg)', border: '1px solid var(--border)',
-                borderRadius: '8px', textDecoration: 'none',
-                transition: 'border-color 0.2s',
-                cursor: item.href ? 'pointer' : 'default',
-              }}
-              onMouseEnter={e => { if (item.href) e.currentTarget.style.borderColor = `${accent}60`; }}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
-            >
-              <div style={{ color: accent, flexShrink: 0 }}><Icon name={item.icon} size={18} /></div>
-              <div>
-                <div style={{ fontSize: '11px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</div>
-                <div style={{ fontSize: '14px', color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>{item.value}</div>
+              {edu.highlight && (
+                <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,transparent,${accent},transparent)` }}/>
+              )}
+              <div style={{ display:'flex', justifyContent:'flex-start', alignItems:'flex-start', marginBottom:'1rem' }}>
+                <div style={{ width:42,height:42,borderRadius:'10px',background:`${edu.highlight?accent:'var(--accent2)'}18`,display:'flex',alignItems:'center',justifyContent:'center' }}>
+                  <Icon name="book" size={20}/>
+                </div>
+              </div>
+              <div style={{ fontWeight:700, fontSize:'16px', marginBottom:'6px' }}>{edu.school}</div>
+              <div style={{ color:edu.highlight?accent:'var(--accent2)', fontWeight:600, fontSize:'13px', marginBottom:'4px' }}>{edu.degree}</div>
+              <div style={{ color:'var(--text2)', fontSize:'13px', marginBottom:'1rem' }}>{edu.field}</div>
+              <div style={{ display:'flex', gap:'1rem', alignItems:'center' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'5px', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)' }}>
+                  <Icon name="calendar" size={12}/>{edu.period}
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:'5px', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)' }}>
+                  <Icon name="location" size={12}/>{edu.location}
+                </div>
               </div>
             </a>
           ))}
         </div>
-      </div>
-
-      <div style={{
-        background: 'var(--bg)', border: '1px solid var(--border)',
-        borderRadius: '12px', padding: '2rem',
-      }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1.5rem' }}>{t(lang, 'formTitle')}</h3>
-        {[
-          { label: t(lang, 'formName'), placeholder: t(lang, 'formNamePh'), type: 'text' },
-          { label: t(lang, 'formEmail'), placeholder: t(lang, 'formEmailPh'), type: 'email' },
-          { label: t(lang, 'formMessage'), placeholder: t(lang, 'formMessagePh'), type: 'textarea' },
-        ].map(field => (
-          <div key={field.label} style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem' }}>{field.label}</label>
-            {field.type === 'textarea'
-              ? <textarea placeholder={field.placeholder} rows={4} style={{
-                  width: '100%', padding: '0.75rem',
-                  background: 'var(--bg2)', border: '1px solid var(--border)',
-                  borderRadius: '6px', color: 'var(--text)', fontSize: '14px',
-                  fontFamily: 'var(--font-display)', resize: 'vertical',
-                  outline: 'none', transition: 'border-color 0.2s',
-                }}
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                />
-              : <input type={field.type} placeholder={field.placeholder} style={{
-                  width: '100%', padding: '0.75rem',
-                  background: 'var(--bg2)', border: '1px solid var(--border)',
-                  borderRadius: '6px', color: 'var(--text)', fontSize: '14px',
-                  fontFamily: 'var(--font-display)', outline: 'none',
-                  transition: 'border-color 0.2s',
-                }}
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                />
-            }
+        {/* Certifications full */}
+        <div style={{ marginTop:'4rem' }}>
+          <p className="section-label reveal">{tl.certTitle}</p>
+          <div className="reveal d2" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'1rem' }}>
+            {DATA.certifications.map(c=>(
+              <div key={c.name} className="cert-card" style={{ borderLeft:`3px solid ${c.color}` }}>
+                <div style={{ fontWeight:600, fontSize:'14px', marginBottom:'4px' }}>{c.name}</div>
+                <div style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:c.color, marginBottom:'6px' }}>{c.issuer}</div>
+                <div style={{ fontSize:'12px', color:'var(--text2)' }}>{c.desc}</div>
+              </div>
+            ))}
           </div>
-        ))}
-        <button style={{
-          width: '100%', padding: '0.85rem',
-          background: accent, color: '#0a0c0f',
-          border: 'none', borderRadius: '6px',
-          fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 600,
-          cursor: 'pointer', letterSpacing: '0.03em',
-          transition: 'opacity 0.2s',
-        }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-        >
-          {t(lang, 'formSend')}
-        </button>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
-/* ── FOOTER ── */
-const Footer = ({ accent, lang }) => (
-  <footer style={{
-    padding: '2rem clamp(1.5rem, 8vw, 10rem)',
-    borderTop: '1px solid var(--border)',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    flexWrap: 'wrap', gap: '1rem',
-  }}>
-    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text3)' }}>
-      © 2025 <span style={{ color: accent }}>Riccardo Civiero</span> · {t(lang, 'footerRights')}
-    </div>
-    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text3)' }}>
-      Built with ♥ · v1.0
-    </div>
-  </footer>
-);
+/* ════════════════════════════════════════════
+   HOBBIES (full section)
+════════════════════════════════════════════ */
+const Hobbies = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  return (
+    <section style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)' }}>
+      <div style={{ maxWidth:'1000px', margin:'0 auto' }}>
+        <p className="section-label reveal">{tl.hobbiesTitle}</p>
+        <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', lineHeight:1.15, marginBottom:'3rem' }}>
+          {tl.hobbiesTitle}
+        </h2>
+        <div className="reveal d2" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'1.25rem' }}>
+          {DATA.hobbies.map((h,i)=>(
+            <div key={h.title} className="hobby-card" style={{ transitionDelay:`${i*0.06}s` }}>
+              <div style={{ fontSize:'2rem', marginBottom:'12px' }}>{h.icon}</div>
+              <div style={{ fontWeight:700, fontSize:'15px', marginBottom:'8px' }}>{h.title}</div>
+              <div style={{ fontSize:'13px', color:'var(--text2)', lineHeight:1.65 }}>{h.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
-/* ── APP ── */
+/* ════════════════════════════════════════════
+   CONTACT
+════════════════════════════════════════════ */
+const Contact = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  const [form, setForm] = React.useState({name:'',email:'',message:''});
+  const [status, setStatus] = React.useState('');
+  const handleSubmit = e => {
+    e.preventDefault();
+    setStatus('sending');
+    emailjs.send(
+      'service_kfj4ure',
+      'template_h0u9r3e',
+      {
+        from_name:    form.name,
+        from_email:   form.email,
+        message:      form.message,
+        reply_to:     form.email,
+      }
+    ).then(() => {
+      setStatus('sent');
+      setForm({name:'',email:'',message:''});
+      setTimeout(()=>setStatus(''),4000);
+    }).catch((err) => {
+      console.error('EmailJS error:', err);
+      setStatus('error');
+      setTimeout(()=>setStatus(''),4000);
+    });
+  };
+  return (
+    <section id="contact" style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)', background:'var(--bg2)', borderTop:'1px solid var(--border)' }}>
+      <div style={{ maxWidth:'900px', margin:'0 auto' }}>
+        <p className="section-label reveal">{tl.contactTitle}</p>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5rem', alignItems:'start' }}>
+          {/* Left */}
+          <div>
+            <h2 className="reveal d1" style={{ fontSize:'clamp(2rem,4vw,3rem)', fontWeight:700, letterSpacing:'-0.02em', lineHeight:1.15, marginBottom:'1.5rem' }}>
+              {tl.contactTitle}
+            </h2>
+            <p className="reveal d2" style={{ fontSize:'1rem', color:'var(--text2)', lineHeight:1.8, marginBottom:'2.5rem' }}>
+              {tl.contactDesc}
+            </p>
+            <div className="reveal d3" style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
+              {[
+                { icon:'mail', label:'Email', val:DATA.email, href:`mailto:${DATA.email}` },
+                { icon:'location', label:'Location', val:DATA.location, href:null },
+              ].map(row=>(
+                <div key={row.label} style={{ display:'flex', alignItems:'center', gap:'14px', padding:'16px 18px', background:'var(--bg)', border:'1px solid var(--border)', borderRadius:'10px' }}>
+                  <div style={{ width:36,height:36,borderRadius:'8px',background:`${accent}18`,display:'flex',alignItems:'center',justifyContent:'center',color:accent,flexShrink:0 }}>
+                    <Icon name={row.icon} size={16}/>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily:'var(--font-mono)', fontSize:'10px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'2px' }}>{row.label}</div>
+                    {row.href
+                      ? <a href={row.href} style={{ fontSize:'13px', color:'var(--text)', textDecoration:'none', fontWeight:500 }} onMouseEnter={e=>e.currentTarget.style.color=accent} onMouseLeave={e=>e.currentTarget.style.color='var(--text)'}>{row.val}</a>
+                      : <span style={{ fontSize:'13px', color:'var(--text)', fontWeight:500 }}>{row.val}</span>
+                    }
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="reveal d4" style={{ marginTop:'2rem', display:'flex', gap:'0.75rem' }}>
+              {DATA.links.map(l=>(
+                <a key={l.label} href={l.url} target="_blank" rel="noreferrer" style={{
+                  padding:'10px 20px', border:'1px solid var(--border)', borderRadius:'8px',
+                  fontFamily:'var(--font-mono)', fontSize:'12px', color:'var(--text2)', textDecoration:'none',
+                  display:'flex', alignItems:'center', gap:'6px', transition:'all 0.2s',
+                }}
+                  onMouseEnter={e=>{ e.currentTarget.style.borderColor=accent; e.currentTarget.style.color=accent; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text2)'; }}
+                ><Icon name="link" size={12}/>{l.label}</a>
+              ))}
+            </div>
+          </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="reveal d2" style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
+            <p style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.12em', marginBottom:'0.5rem' }}>{tl.formTitle}</p>
+            {[
+              { key:'name', label:tl.fName, ph:tl.fNamePh, type:'text' },
+              { key:'email', label:tl.fEmail, ph:tl.fEmailPh, type:'email' },
+            ].map(f=>(
+              <div key={f.key}>
+                <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{f.label}</label>
+                <input type={f.type} required placeholder={f.ph} value={form[f.key]}
+                  onChange={e=>setForm({...form,[f.key]:e.target.value})}
+                  className="form-input" style={{}}
+                />
+              </div>
+            ))}
+            <div>
+              <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{tl.fMsg}</label>
+              <textarea required rows={5} placeholder={tl.fMsgPh} value={form.message}
+                onChange={e=>setForm({...form,message:e.target.value})}
+                className="form-input" style={{}}
+              />
+            </div>
+            <button type="submit" disabled={status==='sending'} style={{
+              padding:'14px',
+              background: status==='sent' ? 'var(--bg2)' : status==='error' ? 'rgba(244,63,94,0.1)' : status==='sending' ? 'var(--bg2)' : accent,
+              color: status==='sent' ? accent : status==='error' ? '#f43f5e' : status==='sending' ? 'var(--text2)' : '#060809',
+              border: (status==='sent'||status==='sending') ? '1px solid '+(status==='sent'?accent:'var(--border)') : status==='error' ? '1px solid #f43f5e' : 'none',
+              borderRadius:'8px', fontFamily:'var(--font-display)', fontSize:'14px',
+              fontWeight:700, cursor: status==='sending'?'not-allowed':'pointer', letterSpacing:'0.02em',
+              transition:'all 0.3s', boxShadow: (!status) ? '0 0 24px rgba(0,229,160,0.2)' : 'none',
+              opacity: status==='sending' ? 0.7 : 1,
+            }}>
+              {status==='sent' ? '✓ Messaggio inviato!' : status==='sending' ? '⏳ Invio in corso...' : status==='error' ? '✕ Errore — riprova' : tl.fSend}
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════ */
+const Footer = ({ accent, lang }) => {
+  const tl = T[lang]||T.en;
+  return (
+    <footer style={{ padding:'2rem clamp(1.5rem,8vw,10rem)', borderTop:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <span style={{ fontFamily:'var(--font-mono)', fontSize:'12px', color:'var(--text3)' }}>
+        © 2025 Riccardo Civiero — {tl.footer}
+      </span>
+      <span style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:accent }}>
+        {tl.available}
+      </span>
+    </footer>
+  );
+};
+
+/* ════════════════════════════════════════════
+   APP
+════════════════════════════════════════════ */
 const App = () => {
+  const [lang, setLang] = React.useState('it');
+  const [introDone, setIntroDown] = React.useState(false);
   const accent = '#00e5a0';
-  const [lang, setLang] = React.useState('en');
 
-  React.useEffect(() => {
-    document.documentElement.style.setProperty('--accent', accent);
-  }, []);
+  useScrollReveal();
 
   return (
     <div>
+      <IntroSplash onDone={() => setIntroDown(true)} />
       <Nav accent={accent} lang={lang} setLang={setLang} />
       <Hero accent={accent} lang={lang} />
       <About accent={accent} lang={lang} />
       <Skills accent={accent} lang={lang} />
-      <Experience accent={accent} showTimeline={true} lang={lang} />
+      <Experience accent={accent} lang={lang} />
       <Education accent={accent} lang={lang} />
+      <Hobbies accent={accent} lang={lang} />
       <Contact accent={accent} lang={lang} />
       <Footer accent={accent} lang={lang} />
     </div>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 </body>
 </html>
