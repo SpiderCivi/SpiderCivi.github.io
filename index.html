@@ -2048,22 +2048,29 @@ const Contact = ({ accent, lang }) => {
     const cleanEmail = sanitize(form.email, 254);
     const cleanMsg = sanitize(form.message, 5000);
 
-    emailjs.send(
-      'service_kfj4ure',
-      'template_h0u9r3e',
-      {
-        from_name:   cleanName,
-        user_name:   cleanName,
-        name:        cleanName,
-        from_email:  cleanEmail,
-        user_email:  cleanEmail,
-        email:       cleanEmail,
-        reply_to:    cleanEmail,
-        message:     cleanMsg,
-        to_name:     'Riccardo',
-        subject:     `Contatto da ${cleanName} (${cleanEmail})`,
-      }
-    ).then(() => {
+    const sendTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 10000)
+    );
+
+    Promise.race([
+      emailjs.send(
+        'service_kfj4ure',
+        'template_h0u9r3e',
+        {
+          from_name:   cleanName,
+          user_name:   cleanName,
+          name:        cleanName,
+          from_email:  cleanEmail,
+          user_email:  cleanEmail,
+          email:       cleanEmail,
+          reply_to:    cleanEmail,
+          message:     cleanMsg,
+          to_name:     'Riccardo',
+          subject:     `Contatto da ${cleanName} (${cleanEmail})`,
+        }
+      ),
+      sendTimeout,
+    ]).then(() => {
       setStatus('sent');
       setForm({name:'',email:'',message:''});
       if (widgetIdRef.current !== null && window.turnstile) {
