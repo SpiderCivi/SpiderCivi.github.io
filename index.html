@@ -2058,6 +2058,8 @@ const Contact = ({ accent, lang }) => {
     const cleanEmail = sanitize(form.email, 254);
     const cleanMsg = sanitize(form.message, 5000);
 
+    console.log('[Contact] emailjs.send starting...', { cleanName, cleanEmail });
+
     const sendTimeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('timeout')), 10000)
     );
@@ -2081,7 +2083,8 @@ const Contact = ({ accent, lang }) => {
           }
         ),
         sendTimeout,
-      ]).then(() => {
+      ]).then((result) => {
+        console.log('[Contact] emailjs.send SUCCESS:', result);
         setStatus('sent');
         setForm({name:'',email:'',message:''});
         if (widgetIdRef.current !== null && window.turnstile) {
@@ -2090,7 +2093,7 @@ const Contact = ({ accent, lang }) => {
         setTurnstileToken('');
         setTimeout(()=>setStatus(''),5000);
       }).catch((err) => {
-        console.error('EmailJS error:', err);
+        console.error('[Contact] emailjs.send ERROR:', err);
         setStatus('error');
         setTimeout(()=>setStatus(''),5000);
       });
