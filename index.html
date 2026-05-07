@@ -10,7 +10,9 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" integrity="sha384-A6XhEo9aYgxL4VdKfn4DRXBH5/gGQdgdv3YOVR/zRd7NFLSS9y7cEIiKdNyy0MR" crossorigin="anonymous"></script>
+  <!-- Cloudflare Turnstile – FREE bot protection. Replace TURNSTILE_SITE_KEY with your real key from https://dash.cloudflare.com/turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script>
     (function(){
       emailjs.init({ publicKey: '9qFdseyN76EtR0DGT' });
@@ -1940,32 +1942,144 @@ const Hobbies = ({ accent, lang }) => {
 /* ════════════════════════════════════════════
    CONTACT
 ════════════════════════════════════════════ */
+
+/* Replace with your real Cloudflare Turnstile site key from https://dash.cloudflare.com/turnstile */
+const TURNSTILE_SITE_KEY = '1x00000000000000000000AA'; // test key – always passes; swap for production
+
+const BLOCKED_DOMAINS = new Set([
+  'mailinator.com','guerrillamail.com','tempmail.com','throwam.com','yopmail.com',
+  'maildrop.cc','sharklasers.com','guerrillamail.info','guerrillamail.biz',
+  'guerrillamail.de','guerrillamail.net','guerrillamail.org','spam4.me',
+  'trashmail.com','trashmail.me','trashmail.at','dispostable.com','mailnull.com',
+  'spamgourmet.com','trashmail.io','fakeinbox.com','getnada.com','tempinbox.com',
+  'discard.email','harakirimail.com','sogetthis.com','spamherelots.com',
+  'mailexpire.com','spam.la','trashmail.net','mintemail.com','spamex.com',
+]);
+
+const isValidEmail = (email) => {
+  if (!email || email.length > 254) return false;
+  const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  if (!re.test(email)) return false;
+  const domain = email.split('@')[1].toLowerCase();
+  if (BLOCKED_DOMAINS.has(domain)) return false;
+  const parts = domain.split('.');
+  if (parts.some(p => p.length === 0)) return false;
+  return true;
+};
+
+const sanitize = (str, maxLen) => String(str).replace(/[<>]/g, '').trim().slice(0, maxLen);
+
+const checkRateLimit = () => {
+  const key = 'cf_submissions';
+  const maxPerHour = 3;
+  const windowMs = 3600000;
+  const now = Date.now();
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
+  history = history.filter(t => now - t < windowMs);
+  if (history.length >= maxPerHour) return false;
+  history.push(now);
+  try { localStorage.setItem(key, JSON.stringify(history)); } catch {}
+  return true;
+};
+
 const Contact = ({ accent, lang }) => {
   const tl = T[lang]||T.en;
   const [form, setForm] = React.useState({name:'',email:'',message:''});
   const [status, setStatus] = React.useState('');
+  const [errors, setErrors] = React.useState({});
+  const [turnstileToken, setTurnstileToken] = React.useState('');
+  const turnstileRef = React.useRef(null);
+  const widgetIdRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = turnstileRef.current;
+    if (!el) return;
+    const tryRender = () => {
+      if (window.turnstile) {
+        widgetIdRef.current = window.turnstile.render(el, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          callback: token => setTurnstileToken(token),
+          'expired-callback': () => setTurnstileToken(''),
+          'error-callback': () => setTurnstileToken(''),
+        });
+      } else {
+        setTimeout(tryRender, 150);
+      }
+    };
+    tryRender();
+    return () => {
+      if (widgetIdRef.current !== null && window.turnstile) {
+        try { window.turnstile.remove(widgetIdRef.current); } catch {}
+      }
+    };
+  }, []);
+
+  const validate = () => {
+    const errs = {};
+    const name = sanitize(form.name, 100);
+    const email = sanitize(form.email, 254);
+    const message = sanitize(form.message, 5000);
+    if (!name || name.length < 2) errs.name = 'Nome troppo corto (min 2 caratteri)';
+    if (!isValidEmail(email)) errs.email = 'Inserisci un\'email valida e reale';
+    if (!message || message.length < 5) errs.message = 'Messaggio troppo corto (min 5 caratteri)';
+    return errs;
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setErrors({});
+
+    if (!checkRateLimit()) {
+      setErrors({ global: 'Troppi messaggi inviati. Riprova tra un\'ora.' });
+      return;
+    }
+
+    if (!turnstileToken) {
+      setErrors({ global: 'Completa la verifica anti-bot prima di inviare.' });
+      return;
+    }
+
     setStatus('sending');
+    const cleanName = sanitize(form.name, 100);
+    const cleanEmail = sanitize(form.email, 254);
+    const cleanMsg = sanitize(form.message, 5000);
+
     emailjs.send(
       'service_kfj4ure',
       'template_h0u9r3e',
       {
-        from_name:    form.name,
-        from_email:   form.email,
-        message:      form.message,
-        reply_to:     form.email,
+        from_name:   cleanName,
+        user_name:   cleanName,
+        name:        cleanName,
+        from_email:  cleanEmail,
+        user_email:  cleanEmail,
+        email:       cleanEmail,
+        reply_to:    cleanEmail,
+        message:     cleanMsg,
+        to_name:     'Riccardo',
+        subject:     `Contatto da ${cleanName} (${cleanEmail})`,
       }
     ).then(() => {
       setStatus('sent');
       setForm({name:'',email:'',message:''});
-      setTimeout(()=>setStatus(''),4000);
+      if (widgetIdRef.current !== null && window.turnstile) {
+        try { window.turnstile.reset(widgetIdRef.current); } catch {}
+      }
+      setTurnstileToken('');
+      setTimeout(()=>setStatus(''),5000);
     }).catch((err) => {
       console.error('EmailJS error:', err);
       setStatus('error');
-      setTimeout(()=>setStatus(''),4000);
+      setTimeout(()=>setStatus(''),5000);
     });
   };
+
+  const inputBorder = (key) => errors[key] ? '1px solid #f43f5e' : '1px solid var(--border)';
+
   return (
     <section id="contact" style={{ padding:'clamp(6rem,12vh,10rem) clamp(1.5rem,8vw,10rem)', background:'var(--bg2)', borderTop:'1px solid var(--border)' }}>
       <div style={{ maxWidth:'900px', margin:'0 auto' }}>
@@ -2012,27 +2126,36 @@ const Contact = ({ accent, lang }) => {
             </div>
           </div>
           {/* Form */}
-          <form onSubmit={handleSubmit} className="reveal d2" style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
+          <form onSubmit={handleSubmit} className="reveal d2" style={{ display:'flex', flexDirection:'column', gap:'1rem' }} noValidate>
             <p style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.12em', marginBottom:'0.5rem' }}>{tl.formTitle}</p>
+            {errors.global && (
+              <div style={{ padding:'10px 14px', background:'rgba(244,63,94,0.08)', border:'1px solid #f43f5e', borderRadius:'8px', color:'#f43f5e', fontSize:'13px' }}>
+                {errors.global}
+              </div>
+            )}
             {[
-              { key:'name', label:tl.fName, ph:tl.fNamePh, type:'text' },
-              { key:'email', label:tl.fEmail, ph:tl.fEmailPh, type:'email' },
+              { key:'name', label:tl.fName, ph:tl.fNamePh, type:'text', maxLength:100 },
+              { key:'email', label:tl.fEmail, ph:tl.fEmailPh, type:'email', maxLength:254 },
             ].map(f=>(
               <div key={f.key}>
-                <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{f.label}</label>
-                <input type={f.type} required placeholder={f.ph} value={form[f.key]}
-                  onChange={e=>setForm({...form,[f.key]:e.target.value})}
-                  className="form-input" style={{}}
+                <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color: errors[f.key] ? '#f43f5e' : 'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{f.label}</label>
+                <input type={f.type} placeholder={f.ph} value={form[f.key]} maxLength={f.maxLength}
+                  onChange={e=>{ setForm({...form,[f.key]:e.target.value}); setErrors(prev=>({...prev,[f.key]:''})); }}
+                  className="form-input" style={{ border: inputBorder(f.key) }}
                 />
+                {errors[f.key] && <p style={{ marginTop:'4px', fontSize:'11px', color:'#f43f5e', fontFamily:'var(--font-mono)' }}>{errors[f.key]}</p>}
               </div>
             ))}
             <div>
-              <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{tl.fMsg}</label>
-              <textarea required rows={5} placeholder={tl.fMsgPh} value={form.message}
-                onChange={e=>setForm({...form,message:e.target.value})}
-                className="form-input" style={{}}
+              <label style={{ display:'block', fontFamily:'var(--font-mono)', fontSize:'11px', color: errors.message ? '#f43f5e' : 'var(--text3)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'6px' }}>{tl.fMsg}</label>
+              <textarea rows={5} placeholder={tl.fMsgPh} value={form.message} maxLength={5000}
+                onChange={e=>{ setForm({...form,message:e.target.value}); setErrors(prev=>({...prev,message:''})); }}
+                className="form-input" style={{ border: inputBorder('message') }}
               />
+              {errors.message && <p style={{ marginTop:'4px', fontSize:'11px', color:'#f43f5e', fontFamily:'var(--font-mono)' }}>{errors.message}</p>}
             </div>
+            {/* Cloudflare Turnstile widget */}
+            <div ref={turnstileRef} style={{ minHeight:'65px' }}></div>
             <button type="submit" disabled={status==='sending'} style={{
               padding:'14px',
               background: status==='sent' ? 'var(--bg2)' : status==='error' ? 'rgba(244,63,94,0.1)' : status==='sending' ? 'var(--bg2)' : accent,
