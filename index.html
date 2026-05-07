@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" crossorigin="anonymous"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script>
     (function(){
       if (typeof emailjs !== 'undefined') {
@@ -1945,6 +1946,8 @@ const Hobbies = ({ accent, lang }) => {
    CONTACT
 ════════════════════════════════════════════ */
 
+const TURNSTILE_SITE_KEY = '0x4AAAAAADK2uMk-m_jmhFjh';
+
 const BLOCKED_DOMAINS = new Set([
   'mailinator.com','guerrillamail.com','tempmail.com','throwam.com','yopmail.com',
   'maildrop.cc','sharklasers.com','guerrillamail.info','guerrillamail.biz',
@@ -1987,6 +1990,37 @@ const Contact = ({ accent, lang }) => {
   const [form, setForm] = React.useState({name:'',email:'',message:''});
   const [status, setStatus] = React.useState('');
   const [errors, setErrors] = React.useState({});
+  const [turnstileToken, setTurnstileToken] = React.useState('');
+  // 'idle' = not loaded yet | 'ready' = callback fired (token valid) | 'error' = widget failed
+  const [turnstileState, setTurnstileState] = React.useState('idle');
+  const turnstileRef = React.useRef(null);
+  const widgetIdRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = turnstileRef.current;
+    if (!el) return;
+    const tryRender = (attempts = 0) => {
+      if (window.turnstile) {
+        widgetIdRef.current = window.turnstile.render(el, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          callback: token => { setTurnstileToken(token); setTurnstileState('ready'); },
+          'expired-callback': () => { setTurnstileToken(''); setTurnstileState('idle'); },
+          'error-callback': () => { setTurnstileToken(''); setTurnstileState('error'); },
+        });
+      } else if (attempts < 40) {
+        setTimeout(() => tryRender(attempts + 1), 150);
+      } else {
+        setTurnstileState('error');
+      }
+    };
+    tryRender();
+    return () => {
+      if (widgetIdRef.current !== null && window.turnstile) {
+        try { window.turnstile.remove(widgetIdRef.current); } catch {}
+      }
+    };
+  }, []);
 
   const validate = () => {
     const errs = {};
@@ -2007,6 +2041,16 @@ const Contact = ({ accent, lang }) => {
 
     if (!checkRateLimit()) {
       setErrors({ global: 'Troppi messaggi inviati. Riprova tra un\'ora.' });
+      return;
+    }
+
+    // Require token only if Turnstile loaded successfully; if it errored, allow submission
+    if (turnstileState === 'ready' && !turnstileToken) {
+      setErrors({ global: 'La verifica è scaduta. Attendi che il widget si aggiorni.' });
+      return;
+    }
+    if (turnstileState === 'idle') {
+      setErrors({ global: 'Completa la verifica anti-bot prima di inviare.' });
       return;
     }
 
@@ -2050,6 +2094,11 @@ const Contact = ({ accent, lang }) => {
         console.log('[Contact] emailjs.send SUCCESS:', result);
         setStatus('sent');
         setForm({name:'',email:'',message:''});
+        if (widgetIdRef.current !== null && window.turnstile) {
+          try { window.turnstile.reset(widgetIdRef.current); } catch {}
+        }
+        setTurnstileToken('');
+        setTurnstileState('idle');
         setTimeout(()=>setStatus(''),5000);
       }).catch((err) => {
         console.error('[Contact] emailjs.send ERROR:', err);
@@ -2140,6 +2189,13 @@ const Contact = ({ accent, lang }) => {
               {errors.message && <p style={{ marginTop:'4px', fontSize:'11px', color:'#f43f5e', fontFamily:'var(--font-mono)' }}>{errors.message}</p>}
             </div>
 
+            {/* Cloudflare Turnstile widget */}
+            <div ref={turnstileRef} style={{ minHeight: turnstileState === 'error' ? '0' : '65px' }}></div>
+            {turnstileState === 'error' && (
+              <p style={{ fontSize:'11px', color:'var(--text3)', fontFamily:'var(--font-mono)' }}>
+                Verifica anti-bot non disponibile — invio comunque abilitato.
+              </p>
+            )}
             <button type="submit" disabled={status==='sending'} style={{
               padding:'14px',
               background: status==='sent' ? 'var(--bg2)' : status==='error' ? 'rgba(244,63,94,0.1)' : status==='sending' ? 'var(--bg2)' : accent,
