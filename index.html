@@ -500,6 +500,11 @@ const T = {
     stats: { exp: 'In IT since', companies: 'Companies' },
     langNames: ['Italian','English','Spanish'],
     footer: 'All rights reserved',
+    fNav: 'Navigate',
+    fProj: 'Projects',
+    fLinks: 'Elsewhere',
+    fHpDesc: 'Daily threat intelligence: real attacks, mapped to MITRE ATT&CK.',
+    fBuilt: 'Built and maintained by me',
     current: 'Current',
     grade: 'Grade',
   },
@@ -528,6 +533,11 @@ const T = {
     stats: { exp: 'Nel settore IT dal', companies: 'Aziende' },
     langNames: ['Italiano','Inglese','Spagnolo'],
     footer: 'Tutti i diritti riservati',
+    fNav: 'Naviga',
+    fProj: 'Progetti',
+    fLinks: 'Altrove',
+    fHpDesc: 'Threat intelligence quotidiana: attacchi reali, mappati su MITRE ATT&CK.',
+    fBuilt: 'Costruito e mantenuto da me',
     current: 'In corso',
     grade: 'Voto',
   },
@@ -556,6 +566,11 @@ const T = {
     stats: { exp: 'En IT desde', companies: 'Empresas' },
     langNames: ['Italiano','Inglés','Español'],
     footer: 'Todos los derechos reservados',
+    fNav: 'Navegar',
+    fProj: 'Proyectos',
+    fLinks: 'En otros sitios',
+    fHpDesc: 'Threat intelligence diaria: ataques reales, mapeados a MITRE ATT&CK.',
+    fBuilt: 'Creado y mantenido por mi',
     current: 'Actual',
     grade: 'Nota',
   },
@@ -584,6 +599,11 @@ const T = {
     stats: { exp: "Dans l'IT depuis", companies: 'Entreprises' },
     langNames: ['Italien','Anglais','Espagnol'],
     footer: 'Tous droits réservés',
+    fNav: 'Naviguer',
+    fProj: 'Projets',
+    fLinks: 'Ailleurs',
+    fHpDesc: 'Threat intelligence quotidienne : attaques reelles, mappees sur MITRE ATT&CK.',
+    fBuilt: 'Concu et maintenu par moi',
     current: 'En cours',
     grade: 'Note',
   },
@@ -612,6 +632,11 @@ const T = {
     stats: { exp: 'In der IT seit', companies: 'Unternehmen' },
     langNames: ['Italienisch','Englisch','Spanisch'],
     footer: 'Alle Rechte vorbehalten',
+    fNav: 'Navigation',
+    fProj: 'Projekte',
+    fLinks: 'Anderswo',
+    fHpDesc: 'Taegliche Threat Intelligence: reale Angriffe, auf MITRE ATT&CK gemappt.',
+    fBuilt: 'Von mir gebaut und gepflegt',
     current: 'Aktuell',
     grade: 'Note',
   },
@@ -2335,17 +2360,78 @@ const Contact = ({ accent, lang }) => {
 ════════════════════════════════════════════ */
 const Footer = ({ accent, lang }) => {
   const isMobile = useIsMobile();
-  const tl = T[lang]||T.en;
+  const tl = T[lang] || T.en;
+  const col  = { display:'flex', flexDirection:'column', gap:'0.65rem' };
+  const lab  = { fontFamily:'var(--font-mono)', fontSize:'10px', letterSpacing:'0.18em',
+                 textTransform:'uppercase', color:'var(--text3)', paddingBottom:'0.75rem',
+                 borderBottom:'1px solid var(--border)', marginBottom:'0.15rem' };
+  const lnkS = { fontFamily:'var(--font-mono)', fontSize:'13px', color:'var(--text2)',
+                 textDecoration:'none', transition:'color .2s', width:'fit-content' };
+  const A = ({ href, children, ext }) => (
+    <a href={href} {...(ext ? { target:'_blank', rel:'noopener noreferrer' } : {})} style={lnkS}
+       onMouseEnter={e => e.currentTarget.style.color = accent}
+       onMouseLeave={e => e.currentTarget.style.color = 'var(--text2)'}>{children}</a>
+  );
   return (
-    <footer style={{ padding:'2rem clamp(1.5rem,8vw,10rem)', borderTop:'1px solid var(--border)', display:'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent:'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '0.4rem' : '0' }}>
-      <span style={{ fontFamily:'var(--font-mono)', fontSize:'12px', color:'var(--text3)' }}>
-        © 2025 Riccardo Civiero — {tl.footer}
-      </span>
-      <span style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color:accent }}>
-        {tl.available}
-      </span>
+    <footer style={{ borderTop:'1px solid var(--border)', background:'var(--bg2)' }}>
+      <div style={{ padding:'clamp(2.5rem,5vw,3.5rem) clamp(1.5rem,8vw,10rem) 2rem',
+                    display:'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : 'minmax(0,1.5fr) repeat(3, minmax(0,1fr))',
+                    gap: isMobile ? '2.2rem' : 'clamp(1.5rem,3vw,3rem)' }}>
+        <div>
+          <div style={{ fontFamily:'var(--font-mono)', fontSize:'19px', fontWeight:700,
+                        color:'var(--text)', letterSpacing:'-0.02em' }}>
+            RC<span style={{ color: accent }}>._</span>
+          </div>
+          <p style={{ fontFamily:'var(--font-mono)', fontSize:'10px', letterSpacing:'0.16em',
+                      textTransform:'uppercase', color: accent, margin:'0.55rem 0 0.9rem' }}>
+            Cybersecurity &amp; Software Developer
+          </p>
+          <p style={{ fontSize:'13px', lineHeight:1.7, color:'var(--text3)', maxWidth:'34ch', margin:0 }}>
+            {tl.fBuilt}. Castelfranco Veneto, IT.
+          </p>
+        </div>
+
+        <div style={col}>
+          <span style={lab}>{tl.fNav}</span>
+          <A href="#about">{tl.nav.about}</A>
+          <A href="#experience">{tl.nav.experience}</A>
+          <A href="#education">{tl.nav.education}</A>
+          <A href="#contact">{tl.nav.contact}</A>
+        </div>
+
+        <div style={col}>
+          <span style={lab}>{tl.fProj}</span>
+          <A href="https://spidercivi.github.io/HACK-PROJECT/" ext>HACK/PROJECT &#8599;</A>
+          <p style={{ fontSize:'12px', lineHeight:1.6, color:'var(--text3)', maxWidth:'30ch', margin:'0 0 0.2rem' }}>
+            {tl.fHpDesc}
+          </p>
+          <A href="https://www.tiktok.com/@h4ckprojct" ext>TikTok &#8599;</A>
+        </div>
+
+        <div style={col}>
+          <span style={lab}>{tl.fLinks}</span>
+          <A href="https://github.com/SpiderCivi" ext>GitHub &#8599;</A>
+          <A href="https://linktr.ee/RickyCivi" ext>Linktree &#8599;</A>
+          <A href="mailto:civiero.riccardo03@gmail.com">Email</A>
+        </div>
+      </div>
+
+      <div style={{ padding:'1.2rem clamp(1.5rem,8vw,10rem) 2rem',
+                    borderTop:'1px solid var(--border)',
+                    display:'flex', flexDirection: isMobile ? 'column' : 'row',
+                    justifyContent:'space-between', alignItems: isMobile ? 'flex-start' : 'center',
+                    gap: isMobile ? '0.5rem' : '0' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:'12px', color:'var(--text3)' }}>
+          &copy; {new Date().getFullYear()} Riccardo Civiero — {tl.footer}
+        </span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:'11px', color: accent }}>
+          {tl.available}
+        </span>
+      </div>
     </footer>
   );
+
 };
 
 /* ════════════════════════════════════════════
