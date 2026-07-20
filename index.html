@@ -4,11 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Riccardo Civiero — Portfolio</title>
+  <meta name="description" content="Riccardo Civiero — Cybersecurity &amp; Software Developer. Portfolio: esperienza, certificazioni Cisco, progetti e contatti." />
+  <meta name="author" content="Riccardo Civiero" />
+  <meta name="keywords" content="Riccardo Civiero, cybersecurity, software developer, portfolio, Castelfranco Veneto, Cisco, sicurezza informatica" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#060809" />
+  <link rel="canonical" href="https://spidercivi.github.io/" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23060809'/%3E%3Ctext%20x='32'%20y='45'%20font-family='monospace'%20font-size='40'%20font-weight='700'%20fill='%2300e5a0'%20text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Riccardo Civiero" />
+  <meta property="og:title" content="Riccardo Civiero — Portfolio" />
+  <meta property="og:description" content="Cybersecurity &amp; Software Developer. Esperienza, certificazioni Cisco e progetti." />
+  <meta property="og:url" content="https://spidercivi.github.io/" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/275543401?v=4" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Riccardo Civiero — Portfolio" />
+  <meta name="twitter:description" content="Cybersecurity &amp; Software Developer." />
+  <meta name="twitter:image" content="https://avatars.githubusercontent.com/u/275543401?v=4" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Riccardo Civiero","url":"https://spidercivi.github.io/","jobTitle":"Cybersecurity & Software Developer","sameAs":["https://github.com/SpiderCivi","https://spidercivi.github.io/HACK-PROJECT/"],"address":{"@type":"PostalAddress","addressLocality":"Castelfranco Veneto","addressCountry":"IT"},"knowsAbout":["Cybersecurity","Software Development","Networking","Threat Intelligence"]}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" crossorigin="anonymous"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -328,9 +346,28 @@
       .intro-corner.tl, .intro-corner.bl { left: 1.2rem !important; }
       .intro-corner.tr, .intro-corner.br { right: 1.2rem !important; }
     }
+
+    /* --- Barra di avanzamento scroll --- */
+    #scrollProgress { position: fixed; top: 0; left: 0; height: 2px; width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent2)); z-index: 9999;
+      box-shadow: 0 0 10px rgba(0,229,160,0.5); will-change: width; }
+    /* --- Micro-interazioni --- */
+    .stat-item { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+    .stat-item:hover { transform: translateY(-5px); }
+    /* --- Rispetto delle preferenze di movimento --- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+      }
+      html { scroll-behavior: auto !important; }
+      .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1 !important; transform: none !important; }
+      #scrollProgress { display: none; }
+    }
   </style>
 </head>
 <body>
+<div id="scrollProgress" aria-hidden="true"></div>
 <div id="root"></div>
 
 <script type="text/babel">
@@ -930,6 +967,40 @@ const useScrollReveal = () => {
 /* ════════════════════════════════════════════
    EARTH GLOBE — realistic
 ════════════════════════════════════════════ */
+const CountUp = ({ value }) => {
+  const ref = React.useRef(null);
+  const [disp, setDisp] = React.useState(value);
+  React.useEffect(() => {
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const m = String(value).match(/^(\d+)(.*)$/);
+    if (reduce || !m) { setDisp(value); return; }
+    const target = parseInt(m[1], 10);
+    const suffix = m[2] || '';
+    const isYear = target > 1900;
+    const start = isYear ? Math.max(0, target - 6) : 0;
+    setDisp(start + suffix);
+    let started = false;
+    const animate = () => {
+      const t0 = performance.now(), dur = 1200;
+      const tick = (now) => {
+        const p = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - p, 3);
+        setDisp(Math.round(start + (target - start) * e) + suffix);
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const el = ref.current;
+    if (!el) { setDisp(value); return; }
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting && !started) { started = true; animate(); obs.unobserve(en.target); } });
+    }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [value]);
+  return <span ref={ref}>{disp}</span>;
+};
+
 const CyberGlobe = ({ accent }) => {
   const canvasRef = React.useRef(null);
   const animRef   = React.useRef(null);
@@ -1690,8 +1761,8 @@ const Hero = ({ accent, lang }) => {
         {/* Stats */}
         <div style={{ display:'flex', gap:'2.5rem', marginTop:'3.5rem' }}>
           {[{n:'2022',l:tl.stats.exp},{n:'5+',l:tl.stats.companies},{n:'3',l:'Cisco Certs'}].map(s=>(
-            <div key={s.l}>
-              <div style={{ fontFamily:'var(--font-mono)', fontSize:'1.8rem', fontWeight:700, color:accent, letterSpacing:'-0.02em' }}>{s.n}</div>
+            <div key={s.l} className="stat-item">
+              <div style={{ fontFamily:'var(--font-mono)', fontSize:'1.8rem', fontWeight:700, color:accent, letterSpacing:'-0.02em' }}><CountUp value={s.n} /></div>
               <div style={{ fontFamily:'var(--font-display)', fontSize:'12px', color:'var(--text3)', marginTop:'2px', letterSpacing:'0.03em' }}>{s.l}</div>
             </div>
           ))}
@@ -2461,6 +2532,20 @@ const App = () => {
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script>
+(function(){
+  var bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  function upd(){
+    var h = document.documentElement;
+    var max = (h.scrollHeight - h.clientHeight) || 1;
+    bar.style.width = Math.min(100, (h.scrollTop / max) * 100) + '%';
+  }
+  window.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', upd);
+  upd();
+})();
 </script>
 </body>
 </html>
